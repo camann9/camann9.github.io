@@ -17,12 +17,16 @@ $(function() {
     let height = $(window).height();
     let canvas = $("#mainCanvas").get(0);
     let textField = $("#currentJson");
-    // For canvas use HTML properties since using CSS properties scales the
-    // canvas
+    // For canvas use HTML properties (for the interior size of the canvas)
+    // and CSS properties for the size on the page
     canvas.height = (height - 30) * PIXEL_RATIO;
     canvas.width = (width * 0.7) * PIXEL_RATIO;
+    canvas.style.height = height - 30;
+    canvas.style.width = width * 0.7;
 
-    // textField.height(height-10);
+    // Text field is simple, just use CSS properties
+    textField.height(height - 30);
+    textField.width(width * 0.3 - 30);
   }
 
   function paint() {
@@ -36,6 +40,7 @@ $(function() {
     let canvasContext = canvas.getContext("2d");
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     let msSinceStart = performance.now() - runStart;
+    canvasContext.font = '40pt Arial'
     canvasContext.fillText(msSinceStart, 100, 100);
   }
 
