@@ -11,22 +11,27 @@ $(function() {
 
   let running = false;
   let runStart = 0;
-
+  let viewport = new Viewport(100, 100, -10, -10, 10);
+  
   function layout() {
-    let width = $(window).width();
-    let height = $(window).height();
+    let width = window.innerWidth;
+    let height = window.innerHeight;
     let canvas = $("#mainCanvas").get(0);
     let textField = $("#currentJson");
     // For canvas use HTML properties (for the interior size of the canvas)
-    // and CSS properties for the size on the page
-    canvas.height = (height - 30) * PIXEL_RATIO;
-    canvas.width = (width * 0.7) * PIXEL_RATIO;
-    canvas.style.height = height - 30;
-    canvas.style.width = width * 0.7;
+    // and CSS properties (for the display size on the page) which will result
+    // in non-blurry rendering
+    let canvasPixelHeight = (height - 30);
+    let canvasPixelWidth = (width * 0.7);
+    canvas.height = canvasPixelHeight * PIXEL_RATIO;
+    canvas.width = canvasPixelWidth * PIXEL_RATIO;
+    canvas.style.height = canvasPixelHeight+"px";
+    canvas.style.width =canvasPixelWidth+"px";
+    viewport.setDisplaySize(canvasPixelWidth, canvasPixelHeight);
 
     // Text field is simple, just use CSS properties
-    textField.height(height - 30);
-    textField.width(width * 0.3 - 30);
+    textField.height(canvasPixelHeight);
+    textField.width(width - canvasPixelWidth - 50);
   }
 
   function paint() {
