@@ -1,8 +1,26 @@
 #mainCanvas {
 	border:1px solid #000000;
+	z-index: 0;
 }
 #currentJson {
 	border:1px solid #000000;
 	width: 100px;
 	height: 95%;
+}
+
+#measureInputFieldsContainer {
+	position: absolute;
+	z-index: 1;
+}
+
+#measureInputFields {
+	position: static;
+}
+
+#measureInputFields input {
+	width: 7em;
+	border-color: grey;
+	border-radius: 3px;
+	border-width: 1px;
+    border-style: solid;
 }

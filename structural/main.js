@@ -11,39 +11,54 @@ $(function() {
 
   let running = false;
   let runStart = 0;
-  let viewport = new Viewport(100, 100, -10, -10, 10);
-  
+  let viewport = new Viewport(100, 100, -10, -10, 10, PIXEL_RATIO);
+
   function layout() {
     let width = window.innerWidth;
     let height = window.innerHeight;
     let canvas = $("#mainCanvas").get(0);
-    let textField = $("#currentJson");
     // For canvas use HTML properties (for the interior size of the canvas)
     // and CSS properties (for the display size on the page) which will result
     // in non-blurry rendering
-    let canvasPixelHeight = (height - 30);
-    let canvasPixelWidth = (width * 0.7);
-    canvas.height = canvasPixelHeight * PIXEL_RATIO;
-    canvas.width = canvasPixelWidth * PIXEL_RATIO;
-    canvas.style.height = canvasPixelHeight+"px";
-    canvas.style.width =canvasPixelWidth+"px";
-    viewport.setDisplaySize(canvasPixelWidth, canvasPixelHeight);
+    let canvasDisplayHeight = (height - 30);
+    let canvasDisplayWidth = (width * 0.7);
+    canvas.height = canvasDisplayHeight * PIXEL_RATIO;
+    canvas.width = canvasDisplayWidth * PIXEL_RATIO;
+    canvas.style.height = canvasDisplayHeight + "px";
+    canvas.style.width = canvasDisplayWidth + "px";
+    viewport.setDisplaySize(canvasDisplayWidth * PIXEL_RATIO,
+        canvasDisplayHeight * PIXEL_RATIO);
 
     // Text field is simple, just use CSS properties
-    textField.height(canvasPixelHeight);
-    textField.width(width - canvasPixelWidth - 50);
+    let textField = $("#currentJson");
+    textField.height(canvasDisplayHeight);
+    textField.width(width - canvasDisplayWidth - 50);
+
+    // The input fields for measures need to be in the lower right hand corner of
+    // the canvas
+    let measureInputFields = $("#measureInputFieldsContainer");
+    let measureInputFieldsPosition = $("#mainCanvas").offset();
+    measureInputFieldsPosition.top += canvasDisplayHeight - measureInputFields.height();
+    measureInputFieldsPosition.left += canvasDisplayWidth - measureInputFields.width();
+    measureInputFields.offset(measureInputFieldsPosition);
+
+    // Repaint canvas after layout
+    paint(true);
   }
 
-  function paint() {
+  function paint(ignoreRunning) {
     // Abort repaint loop
-    if (!running) {
+    if (!running && !ignoreRunning) {
       return;
     }
-    requestAnimationFrame(paint);
+    if (running) {
+      requestAnimationFrame(paint);
+    }
 
     let canvas = $("#mainCanvas").get(0);
     let canvasContext = canvas.getContext("2d");
-    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    viewport.clear(canvasContext);
+    viewport.drawAxes(canvasContext);
     let msSinceStart = performance.now() - runStart;
     canvasContext.font = '40pt Arial'
     canvasContext.fillText(msSinceStart, 100, 100);
@@ -58,8 +73,12 @@ $(function() {
     event.preventDefault();
     if (event.key == " ") {
       running = !running;
-      runStart = performance.now();
-      requestAnimationFrame(paint);
+      if (running) {
+        runStart = performance.now();
+        requestAnimationFrame(function() {
+          paint(false);
+        });
+      }
     }
   });
 
