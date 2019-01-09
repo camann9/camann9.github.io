@@ -3,15 +3,27 @@
 <title>Structural playground</title>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script type="text/javascript" src="viewport.js"></script>
+<script type="text/javascript" src="lib/js.cookie.js"></script>
+<script type="text/javascript" src="controller.js"></script>
+<script type="text/javascript" src="model.js"></script>
+<script type="text/javascript" src="view.js"></script>
+<script type="text/javascript" src="view-port.js"></script>
+<script type="text/javascript" src="simulation-state.js"></script>
+<script type="text/javascript" src="current-element.js"></script>
 <script type="text/javascript" src="main.js"></script>
 <link rel="stylesheet" href="main.css">
 </head>
 <body>
-	<canvas id="mainCanvas" width=400 height=400></canvas>
+	<div id="canvasContainer">
+		<canvas id="mainCanvas" width=400 height=400></canvas>
+		<canvas id="currentElementCanvas" width=400 height=400></canvas>
+	</div>
 	<textarea id="currentJson"></textarea>
 	<div id="measureInputFieldsContainer">
-		<div id="measureInputFields">x:<input type="text" id="xPos">, y:<input type="text" id="yPos"></div>
+		<div id="measureInputFields">
+			x:<input type="text" id="xPos">, y:<input type="text"
+				id="yPos">
+		</div>
 	</div>
 </body>
 </html>

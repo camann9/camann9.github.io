@@ -9,25 +9,41 @@ $(function() {
     return dpr / bsr;
   })();
 
-  let running = false;
-  let runStart = 0;
-  let viewport = new Viewport(100, 100, -10, -10, 10, PIXEL_RATIO);
+  let model = Controller.getModelFromCookie();
+  let simulationState = new SimulationState();
+  let viewport = new Viewport(100, 100, -50, -50, 10, PIXEL_RATIO);
+  let view = new View(model, simulationState, viewport);
+  let currentElement = new CurrentElement(viewport);
+  let controller = new Controller(model, simulationState, currentElement, viewport, view);
+  
+  function setCanvasHeightWidth(canvas, displayWidth, displayHeight) {
+    // For canvas use HTML properties (for the interior size of the canvas)
+    // and CSS properties (for the display size on the page) which will result
+    // in non-blurry rendering
+    canvas.width = displayWidth * PIXEL_RATIO;
+    canvas.height = displayHeight * PIXEL_RATIO;
+    canvas.style.width = displayWidth + "px";
+    canvas.style.height = displayHeight + "px";
+    viewport.setDisplaySize(displayWidth * PIXEL_RATIO,
+        displayHeight * PIXEL_RATIO);
+  }
 
   function layout() {
     let width = window.innerWidth;
     let height = window.innerHeight;
-    let canvas = $("#mainCanvas").get(0);
-    // For canvas use HTML properties (for the interior size of the canvas)
-    // and CSS properties (for the display size on the page) which will result
-    // in non-blurry rendering
-    let canvasDisplayHeight = (height - 30);
     let canvasDisplayWidth = (width * 0.7);
-    canvas.height = canvasDisplayHeight * PIXEL_RATIO;
-    canvas.width = canvasDisplayWidth * PIXEL_RATIO;
-    canvas.style.height = canvasDisplayHeight + "px";
-    canvas.style.width = canvasDisplayWidth + "px";
-    viewport.setDisplaySize(canvasDisplayWidth * PIXEL_RATIO,
-        canvasDisplayHeight * PIXEL_RATIO);
+    let canvasDisplayHeight = (height - 30);
+    
+    let canvasContainer = $("#canvasContainer");
+    canvasContainer.width(canvasDisplayWidth);
+    canvasContainer.height(canvasDisplayHeight);
+    let mainCanvas = $("#mainCanvas");
+    setCanvasHeightWidth(mainCanvas.get(0), canvasDisplayWidth, canvasDisplayHeight);
+    let currentElementCanvas = $("#currentElementCanvas");
+    setCanvasHeightWidth(currentElementCanvas.get(0), canvasDisplayWidth, canvasDisplayHeight);
+    // The current element canvas is exactly on top of the main canvas
+    mainCanvas.offset(canvasContainer.offset());
+    currentElementCanvas.offset(canvasContainer.offset());
 
     // Text field is simple, just use CSS properties
     let textField = $("#currentJson");
@@ -43,47 +59,14 @@ $(function() {
     measureInputFields.offset(measureInputFieldsPosition);
 
     // Repaint canvas after layout
-    paint(true);
+    view.paint();
   }
 
-  function paint(ignoreRunning) {
-    // Abort repaint loop
-    if (!running && !ignoreRunning) {
-      return;
-    }
-    if (running) {
-      requestAnimationFrame(paint);
-    }
-
-    let canvas = $("#mainCanvas").get(0);
-    let canvasContext = canvas.getContext("2d");
-    viewport.clear(canvasContext);
-    viewport.drawAxes(canvasContext);
-    let msSinceStart = performance.now() - runStart;
-    canvasContext.font = '40pt Arial'
-    canvasContext.fillText(msSinceStart, 100, 100);
-  }
-
-  $('body').keydown(function(event) {
-    if ($("#currentJson").is(":focus")) {
-      // Nothing to do if user focuses on text area
-      // We want to let them enter stuff
-      return;
-    }
-    event.preventDefault();
-    if (event.key == " ") {
-      running = !running;
-      if (running) {
-        runStart = performance.now();
-        requestAnimationFrame(function() {
-          paint(false);
-        });
-      }
-    }
-  });
+  controller.installHandlers();
 
   $(window).resize(function() {
     requestAnimationFrame(layout);
   });
   layout();
+  controller.updateModelStorage(true);
 })

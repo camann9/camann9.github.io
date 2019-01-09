@@ -1,16 +1,36 @@
+#canvasContainer {
+	display:inline-block;
+}
+
 #mainCanvas {
 	border:1px solid #000000;
+	position: absolute;
+	top: 0px;
+	left: 0px;
 	z-index: 0;
 }
+
+#currentElementCanvas {
+	border:1px solid #000000;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+}
+
 #currentJson {
 	border:1px solid #000000;
 	width: 100px;
 	height: 95%;
 }
 
+#currentJson.incorrect {
+	border:1px solid #f66464;
+}
+
 #measureInputFieldsContainer {
 	position: absolute;
-	z-index: 1;
+	z-index: 2;
 }
 
 #measureInputFields {
