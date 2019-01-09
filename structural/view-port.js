@@ -13,6 +13,12 @@ class Viewport {
     this.height = height;
   }
   
+  setStartAndScale(startX, startY, scale) {
+    this.startX = startX;
+    this.startY = startY;
+    this.scale = scale;
+  }
+  
   clear(context) {
     context.clearRect(0, 0, this.width, this.height);
   }

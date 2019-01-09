@@ -1,17 +1,16 @@
+var PIXEL_RATIO = (function() {
+  var ctx = document.createElement("canvas").getContext("2d"), dpr = window.devicePixelRatio || 1, bsr = ctx.webkitBackingStorePixelRatio
+      || ctx.mozBackingStorePixelRatio
+      || ctx.msBackingStorePixelRatio
+      || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1;
+
+  return dpr / bsr;
+})();
+
 $(function() {
-
-  var PIXEL_RATIO = (function() {
-    var ctx = document.createElement("canvas").getContext("2d"), dpr = window.devicePixelRatio || 1, bsr = ctx.webkitBackingStorePixelRatio
-        || ctx.mozBackingStorePixelRatio
-        || ctx.msBackingStorePixelRatio
-        || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1;
-
-    return dpr / bsr;
-  })();
-
   let model = Controller.getModelFromCookie();
   let simulationState = new SimulationState();
-  let viewport = new Viewport(100, 100, -50, -50, 10, PIXEL_RATIO);
+  let viewport = model.viewport;
   let view = new View(model, simulationState, viewport);
   let currentElement = new CurrentElement(viewport);
   let controller = new Controller(model, simulationState, currentElement, viewport, view);
