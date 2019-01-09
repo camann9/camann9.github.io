@@ -1,7 +1,7 @@
 class Model {
   constructor(json) {
     // Set initial values. This will be updated if required
-    this.viewport = new Viewport(100, 100, -10, -10, 10, PIXEL_RATIO);
+    this.viewport = new Viewport(100, 100, -10, 10, 10, PIXEL_RATIO);
     this.points = [];
     this.maxPointId = 0;
     this.updateFromJson(json ? json : "{}");

@@ -19,6 +19,16 @@ class Viewport {
     this.scale = scale;
   }
   
+  zoom(amount, mousePos) {
+    this.scale *= amount;
+    // keep the model location at the cursor position constant
+    let modelCoord = this.pageCoordToModel(mousePos);
+    let deltaX = modelCoord.x - this.startX;
+    let deltaY = modelCoord.y - this.startY;
+    this.startX += deltaX * amount;
+    this.startY += deltaY * amount;
+  }
+  
   clear(context) {
     context.clearRect(0, 0, this.width, this.height);
   }
@@ -64,7 +74,7 @@ class Viewport {
   }
   
   yToView(y) {
-    return (y - this.startY) * this.scale;
+    return (this.startY - y) * this.scale;
   }
 
   xToModel(x) {
@@ -72,7 +82,7 @@ class Viewport {
   }
   
   yToModel(y) {
-    return y / this.scale + this.startY;
+    return -y / this.scale + this.startY;
   }
   
   pageCoordToModel(pos) {

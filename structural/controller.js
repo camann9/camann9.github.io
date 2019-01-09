@@ -17,7 +17,6 @@ class Controller {
     }
     
     if (event.key == "s") {
-      event.preventDefault();
       this.simulationState.running = !this.simulationState.running;
       if (this.simulationState.running) {
         this.simulationState.runStart = performance.now();
@@ -31,7 +30,11 @@ class Controller {
     } else if(event.key == " " || event.key == "Escape") {
       this.mode = null;
       this.currentElement.clear();
+    } else {
+      return;
     }
+    // If we treated the event (not "else" case) then we prevent default
+    event.preventDefault();
   }
   
   static getModelFromCookie() {
@@ -83,6 +86,21 @@ class Controller {
     }
   }
   
+  onWheel(event) {
+    var delta = event.originalEvent.deltaY;
+
+    if (delta > 0) {
+      this.viewport.zoom(1.25, this.mousePos);
+    } else {
+      this.viewport.zoom(1 / 1.25, this.mousePos);
+    }
+    this.updateModelStorage(true);
+    this.view.paint();
+
+    // Prevent default
+    return false;
+  }
+  
   getPosFromMouseEvent(event) {
     let canvasOffset = $('#mainCanvas').offset();
     let x = event.pageX - canvasOffset.left;
@@ -103,6 +121,7 @@ class Controller {
     $('body').keydown($.proxy(this.onKeydown, this));
     $('#currentElementCanvas').mousemove($.proxy(this.onMousemove, this));
     $('#currentElementCanvas').click($.proxy(this.onClick, this));
+    $('#currentElementCanvas').on('wheel', $.proxy(this.onWheel, this));
     $('#currentJson').change($.proxy(this.onJsonChange, this));
   }
 }
