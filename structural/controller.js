@@ -159,9 +159,9 @@ class Controller {
   }
   
   clearSelection() {
-    this.currentElement.clear();
     this.selection = null;
     this.selectionType = null;
+    this.currentElement.clear();
   }
   
   paint() {

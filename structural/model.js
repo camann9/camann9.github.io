@@ -2,17 +2,18 @@ class Model {
   constructor(json) {
     // Set initial values. This will be updated if required
     this.viewport = new Viewport(100, 100, -10, 10, 10, PIXEL_RATIO);
-    this.points = [];
+    this.points = {};
     this.maxPointId = 0;
     this.updateFromJson(json ? json : "{}");
   }
 
   updateFromJson(json) {
     let parsed = JSON.parse(json);
-    if (parsed.points) {
-      this.points = parsed.points;
+    if (parsed.points && parsed.points.length > 0) {
+      this.points = {};
+      parsed.points.forEach((p) => {this.points[p.id] = p;});
       // find max
-      this.maxPointId = Math.max.apply(null, parsed.points.map(p => p.id));
+      this.maxPointId = Math.max.apply(null, Object.keys(this.points));
     }
     
     if (parsed.viewport) {
@@ -25,22 +26,22 @@ class Model {
     // Copy and modify
     let point = Object.assign({}, pos);
     point.id = ++this.maxPointId;
-    this.points.push(point);
+    this.points[point.id] = point;
   }
   
   findClosestPoint(pos, maxDist) {
-    if (this.points.length == 0) {
+    let closest = null;
+    let shortestDist = Number.MAX_SAFE_INTEGER;
+    Object.values(this.points).forEach((p) => {
+      if (closest == null
+          || this.getDist(p, pos) < shortestDist) {
+        shortestDist = this.getDist(p, pos);
+        closest = p;
+      }
+    });
+    if (!closest) {
       return null;
     }
-    let closest = this.points[0];
-    let shortestDist = this.getDist(closest, pos);
-    this.points.forEach((p) => {
-      let dist = this.getDist(p, pos);
-      if (dist < shortestDist) {
-        shortestDist = dist;
-        closest = p;
-      } 
-    });
     if (this.getDist(closest, pos) > maxDist) {
       return null;
     }
@@ -55,7 +56,10 @@ class Model {
   
   toJson() {
     let output = {};
-    output.points = this.points.map(p => this.jsonPoint(p));
+    output.points = [];
+    Object.values(this.points).forEach((p) => {
+      output.points.push(this.jsonPoint(p));
+    });
     output.viewport = {
         startX: this.viewport.startX,
         startY: this.viewport.startY,

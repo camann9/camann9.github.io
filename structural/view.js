@@ -34,7 +34,9 @@ class View {
   }
   
   drawModel(canvasContext) {
-    this.model.points.forEach((p) => {this.viewport.drawDot(canvasContext, p);});
+    Object.values(this.model.points).forEach((p) => {
+      this.viewport.drawDot(canvasContext, p);
+    });
   }
   
   updateMousePos(pos) {
