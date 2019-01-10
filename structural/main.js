@@ -48,7 +48,7 @@ $(function() {
     let tabPane = $("#tabPane");
     tabPane.height(canvasDisplayHeight);
     tabPane.width(width - canvasDisplayWidth -30);
-    this.view.displayTab("properties");
+    view.displayTab("properties");
 
     // The input fields for measures need to be in the lower right hand corner of
     // the canvas
