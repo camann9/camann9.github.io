@@ -49,4 +49,11 @@ class View {
       focussed.select();
     }
   }
+  
+  displayTab(name) {
+    $("#tabButtons").children().removeClass("activeTabButton");
+    $("#tabContainer").children().removeClass("activeTabContent");
+    $("#" + name + "Button").addClass("activeTabButton");
+    $("#" + name + "Tab").addClass("activeTabContent");
+  }
 }

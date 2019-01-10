@@ -44,10 +44,11 @@ $(function() {
     mainCanvas.offset(canvasContainer.offset());
     currentElementCanvas.offset(canvasContainer.offset());
 
-    // Text field is simple, just use CSS properties
-    let textField = $("#currentJson");
-    textField.height(canvasDisplayHeight);
-    textField.width(width - canvasDisplayWidth - 50);
+    // Tabs on right hand side
+    let tabPane = $("#tabPane");
+    tabPane.height(canvasDisplayHeight);
+    tabPane.width(width - canvasDisplayWidth -30);
+    this.view.displayTab("properties");
 
     // The input fields for measures need to be in the lower right hand corner of
     // the canvas

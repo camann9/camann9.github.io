@@ -18,7 +18,20 @@
 		<canvas id="mainCanvas" width=400 height=400></canvas>
 		<canvas id="currentElementCanvas" width=400 height=400></canvas>
 	</div>
-	<textarea id="currentJson"></textarea>
+	<div id="tabPane">
+		<div id="tabButtons">
+		  <button type="button" id="propertiesButton">Properties</button>
+		  <button type="button" id="jsonButton">Json</button>
+		</div>
+		<div id=tabContainer>
+			<div id=propertiesTab>
+			  bla
+			</div>
+			<div id="jsonTab">
+			  <textarea id="currentJson"></textarea>
+			</div>
+		</div>
+	</div>
 	<div id="measureInputFieldsContainer">
 		<div id="locationFields">
 			x:<input type="text" id="xPos">, y:<input type="text"

@@ -179,5 +179,7 @@ class Controller {
     $('#currentElementCanvas').click($.proxy(this.onClick, this));
     $('#currentElementCanvas').on('wheel', $.proxy(this.onWheel, this));
     $('#currentJson').change($.proxy(this.onJsonChange, this));
+    $('#propertiesButton').click(() => {this.view.displayTab("properties")});
+    $('#jsonButton').click(() => {this.view.displayTab("json")});
   }
 }
