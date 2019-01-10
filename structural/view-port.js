@@ -20,13 +20,13 @@ class Viewport {
   }
   
   zoom(amount, mousePos) {
+    let modelCoord = this.pageCoordToModel(mousePos);
     this.scale *= amount;
     // keep the model location at the cursor position constant
-    let modelCoord = this.pageCoordToModel(mousePos);
     let deltaX = modelCoord.x - this.startX;
     let deltaY = modelCoord.y - this.startY;
-    this.startX += deltaX * amount;
-    this.startY += deltaY * amount;
+    this.startX += deltaX * (1 - 1 / amount);
+    this.startY += deltaY * (1 - 1/ amount);
   }
   
   clear(context) {
@@ -99,5 +99,9 @@ class Viewport {
   
   pageCoordToView(pos) {
     return {x: this.pixelScale * pos.x, y: this.pixelScale * pos.y};
+  }
+  
+  getMaxDistForSelection() {
+    return 8 * 1 / this.scale;
   }
 }

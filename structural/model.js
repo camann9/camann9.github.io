@@ -28,6 +28,31 @@ class Model {
     this.points.push(point);
   }
   
+  findClosestPoint(pos, maxDist) {
+    if (this.points.length == 0) {
+      return null;
+    }
+    let closest = this.points[0];
+    let shortestDist = this.getDist(closest, pos);
+    this.points.forEach((p) => {
+      let dist = this.getDist(p, pos);
+      if (dist < shortestDist) {
+        shortestDist = dist;
+        closest = p;
+      } 
+    });
+    if (this.getDist(closest, pos) > maxDist) {
+      return null;
+    }
+    return closest;
+  }
+  
+  getDist(p1, p2) {
+    let dx = p1.x - p2.x;
+    let dy = p1.y - p2.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+  
   toJson() {
     let output = {};
     output.points = this.points.map(p => this.jsonPoint(p));

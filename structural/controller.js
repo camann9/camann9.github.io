@@ -7,6 +7,8 @@ class Controller {
     this.view = view;
     this.mode = null;
     this.mousePos = null;
+    this.selection = null;
+    this.selectionType = null;
   }
   
   onKeydown(event) {
@@ -27,11 +29,38 @@ class Controller {
       if(this.mousePos) {
         this.currentElement.drawDot(this.mousePos);
       }
+      this.view.selectFirstInputField();
+    } else if(event.key == ",") {
+      if (!this.mode) {
+        // We're not in any mode so ignore input
+        return;
+      }
+      if (!this.view.advanceFocus()) {
+        return;
+      }
+    } else if(event.key == "Enter") {
+      if (!(this.mode == "point")) {
+        return;
+      }
+      let pos = this.getPosFromInputFields();
+      if (pos == null) {
+        return;
+      }
+      this.model.addPoint(pos);
+      this.view.paint();
+      this.updateModelStorage(true);
+      // Prepare input field for next element
+      this.view.selectFirstInputField();
     } else if(event.key == " " || event.key == "Escape") {
       this.mode = null;
-      this.currentElement.clear();
+      this.clearSelection();
     } else {
       return;
+    }
+    
+    // If we're no longer in selection mode we need to clear the selection
+    if (!!this.mode) {
+      this.clearSelection();
     }
     // If we treated the event (not "else" case) then we prevent default
     event.preventDefault();
@@ -46,11 +75,22 @@ class Controller {
   }
   
   onClick() {
-    if (this.mode == null) {
-      return;
-    }
-    if (this.mode == "point") {
+    if (!this.mode) {
+      // Select point
+      let pos = this.getPosFromMouseEvent(event);
+      let modelPos = this.viewport.pageCoordToModel(pos);
+      let maxDist = this.viewport.getMaxDistForSelection();
+      let point = this.model.findClosestPoint(modelPos, maxDist);
+      if (point) {
+        this.selection = point;
+        this.selectionType = "point";
+        // Highlight selected point
+        this.currentElement.drawSelectedPoint(point);
+      }
+    } else if (this.mode == "point") {
       this.model.addPoint(this.viewport.pageCoordToModel(this.getPosFromMouseEvent(event)));
+      // Prepare input field for next element
+      this.view.selectFirstInputField();
     }
     this.view.paint();
     this.updateModelStorage(true);
@@ -90,9 +130,9 @@ class Controller {
     var delta = event.originalEvent.deltaY;
 
     if (delta > 0) {
-      this.viewport.zoom(1.25, this.mousePos);
-    } else {
       this.viewport.zoom(1 / 1.25, this.mousePos);
+    } else {
+      this.viewport.zoom(1.25, this.mousePos);
     }
     this.updateModelStorage(true);
     this.view.paint();
@@ -106,6 +146,22 @@ class Controller {
     let x = event.pageX - canvasOffset.left;
     let y = event.pageY - canvasOffset.top;
     return {x: x, y: y};
+  }
+  
+  getPosFromInputFields() {
+    let canvasOffset = $('#mainCanvas').offset();
+    let x = parseFloat($("#xPos").val());
+    let y = parseFloat($("#yPos").val());
+    if (x == NaN || y == NaN) {
+      return null;
+    }
+    return {x: x, y: y};
+  }
+  
+  clearSelection() {
+    this.currentElement.clear();
+    this.selection = null;
+    this.selectionType = null;
   }
   
   paint() {

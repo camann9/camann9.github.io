@@ -6,11 +6,21 @@ class CurrentElement {
   }
   
   drawDot(pos) {
+    // Input is in page coords
+    
     let canvasContext = this.canvas.getContext("2d");
-    // Clear area of old location
     this.clear();
     // Draw new point and store location
     this.area = this.viewport.drawDotViewCoord(canvasContext, this.viewport.pageCoordToView(pos), "green");
+  }
+  
+  drawSelectedPoint(point) {
+    // Input is in model coords
+    
+    let canvasContext = this.canvas.getContext("2d");
+    this.clear();
+    // Draw new point and store location
+    this.area = this.viewport.drawDotViewCoord(canvasContext, this.viewport.modelCoordToView(point), "red");
   }
   
   clear() {
