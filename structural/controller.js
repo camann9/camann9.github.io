@@ -1,9 +1,9 @@
 class Controller {
-  constructor(model, simulationState, currentElement, viewport, view) {
+  constructor(model, simulationState, currentElement, viewConfig, view) {
     this.model = model;
     this.simulationState = simulationState;
     this.currentElement = currentElement;
-    this.viewport = viewport;
+    this.viewConfig = viewConfig;
     this.view = view;
     this.mode = null;
     this.mousePos = null;
@@ -71,7 +71,7 @@ class Controller {
     if (!this.mode) {
       this.select(event);
     } else if (this.mode == "point") {
-      this.model.addPoint(this.viewport.pageCoordToModel(this.getPosFromMouseEvent(event)));
+      this.model.addPoint(this.viewConfig.pageCoordToModel(this.getPosFromMouseEvent(event)));
       // Prepare input field for next element
       this.view.selectFirstInputField();
       this.onModelChange(true);
@@ -91,7 +91,7 @@ class Controller {
   
   onMousemove(event) {
     this.mousePos = this.getPosFromMouseEvent(event);
-    this.view.updateMousePos(this.viewport.pageCoordToModel(this.mousePos));
+    this.view.updateMousePos(this.viewConfig.pageCoordToModel(this.mousePos));
     if (this.mode == "point") {
       this.currentElement.drawDot(this.mousePos);
     }
@@ -101,9 +101,9 @@ class Controller {
     var delta = event.originalEvent.deltaY;
 
     if (delta > 0) {
-      this.viewport.zoom(1 / 1.25, this.mousePos);
+      this.viewConfig.zoom(1 / 1.25, this.mousePos);
     } else {
-      this.viewport.zoom(1.25, this.mousePos);
+      this.viewConfig.zoom(1.25, this.mousePos);
     }
     this.onModelChange(true);
 
@@ -173,8 +173,8 @@ class Controller {
   select(event) {
     // Select point
     let pos = this.getPosFromMouseEvent(event);
-    let modelPos = this.viewport.pageCoordToModel(pos);
-    let maxDist = this.viewport.getMaxDistForSelection();
+    let modelPos = this.viewConfig.pageCoordToModel(pos);
+    let maxDist = this.viewConfig.getMaxDistForSelection();
     let point = this.model.findClosestPoint(modelPos, maxDist);
     if (point) {
       this.selection = {id: point.id, type: "point"};

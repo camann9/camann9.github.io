@@ -2,14 +2,14 @@ class View {
   constructor(model, simulationState) {
     this.model = model;
     this.simulationState = simulationState;
-    this.viewport = model.viewport;
+    this.viewConfig = model.viewConfig;
   }
   
   paint() {
     let canvas = $("#mainCanvas").get(0);
     let canvasContext = canvas.getContext("2d");
-    this.viewport.clear(canvasContext);
-    this.viewport.drawAxes(canvasContext);
+    this.viewConfig.clear(canvasContext);
+    this.viewConfig.drawAxes(canvasContext);
     this.drawModel(canvasContext);
   }
   
@@ -45,7 +45,7 @@ class View {
   
   drawModel(canvasContext) {
     Object.values(this.model.points).forEach((p) => {
-      this.viewport.drawDot(canvasContext, p);
+      this.viewConfig.drawDot(canvasContext, p);
     });
   }
   

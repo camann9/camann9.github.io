@@ -10,10 +10,10 @@ var PIXEL_RATIO = (function() {
 $(function() {
   let model = Controller.getModelFromCookie();
   let simulationState = new SimulationState();
-  let viewport = model.viewport;
+  let viewConfig = model.viewConfig;
   let view = new View(model, simulationState);
   let currentElement = new CurrentElement(model);
-  let controller = new Controller(model, simulationState, currentElement, viewport, view);
+  let controller = new Controller(model, simulationState, currentElement, viewConfig, view);
   
   function setCanvasHeightWidth(canvas, displayWidth, displayHeight) {
     // For canvas use HTML properties (for the interior size of the canvas)
@@ -23,7 +23,7 @@ $(function() {
     canvas.height = displayHeight * PIXEL_RATIO;
     canvas.style.width = displayWidth + "px";
     canvas.style.height = displayHeight + "px";
-    viewport.setDisplaySize(displayWidth * PIXEL_RATIO,
+    viewConfig.setDisplaySize(displayWidth * PIXEL_RATIO,
         displayHeight * PIXEL_RATIO);
   }
 

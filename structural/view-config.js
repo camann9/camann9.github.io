@@ -1,4 +1,4 @@
-class Viewport {
+class ViewConfig {
   constructor(width, height, startX, startY, scale, pixelScale) {
     this.width = width;
     this.height = height;

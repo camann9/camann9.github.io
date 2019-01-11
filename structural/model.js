@@ -1,7 +1,7 @@
 class Model {
   constructor(json) {
     // Set initial values. This will be updated if required
-    this.viewport = new Viewport(100, 100, -10, 10, 10, PIXEL_RATIO);
+    this.viewConfig = new ViewConfig(100, 100, -10, 10, 10, PIXEL_RATIO);
     this.points = {};
     this.maxPointId = 0;
     this.updateFromJson(json ? json : "{}");
@@ -16,9 +16,9 @@ class Model {
       this.maxPointId = Math.max.apply(null, Object.keys(this.points));
     }
     
-    if (parsed.viewport) {
-      let v = parsed.viewport;
-      this.viewport.setStartAndScale(v.startX, v.startY, v.scale);
+    if (parsed.viewConfig) {
+      let v = parsed.viewConfig;
+      this.viewConfig.setStartAndScale(v.startX, v.startY, v.scale);
     }
   }
   
@@ -70,10 +70,10 @@ class Model {
     Object.values(this.points).forEach((p) => {
       output.points.push(this.jsonPoint(p));
     });
-    output.viewport = {
-        startX: this.viewport.startX,
-        startY: this.viewport.startY,
-        scale: this.viewport.scale
+    output.viewConfig = {
+        startX: this.viewConfig.startX,
+        startY: this.viewConfig.startY,
+        scale: this.viewConfig.scale
     };
     return JSON.stringify(output);
   }
