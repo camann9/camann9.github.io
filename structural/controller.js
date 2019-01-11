@@ -35,7 +35,12 @@ class Controller {
       }
       this.onModelChange(true);
     } else if(event.key == "Enter") {
-      this.placeObjectFromInputFields();
+      if (this.mode == "point") {
+        this.placeObjectFromInputFields();
+      } else if (this.selection) {
+        // Trigger change on current input field
+        this.onPropertyChange();
+      }
     } else if(event.key == " " || event.key == "Escape") {
       this.mode = null;
       this.clearSelection();
@@ -69,8 +74,8 @@ class Controller {
       this.model.addPoint(this.viewport.pageCoordToModel(this.getPosFromMouseEvent(event)));
       // Prepare input field for next element
       this.view.selectFirstInputField();
+      this.onModelChange(true);
     }
-    this.onModelChange(true);
   }
 
   onJsonChange() {
@@ -107,11 +112,14 @@ class Controller {
   }
   
   onPropertyChange() {
+    if (!this.selection) {
+      return;
+    }
     if (this.selection.type == "point") {
       let newPoint = {x: $("#propPointX").val(), y: $("#propPointY").val()};
       this.model.setPoint(this.selection.id, newPoint);
     }
-    
+    this.onModelChange(true);
   }
   
   onModelChange(updateJson) {
