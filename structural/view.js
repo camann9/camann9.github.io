@@ -49,7 +49,7 @@ class View {
   
   drawModel(canvasContext) {
     Object.values(this.model.points).forEach((p) => {
-      this.viewConfig.drawDot(canvasContext, p, p.id, p.supportType, "black");
+      this.viewConfig.drawDot(canvasContext, p, p.id, p.support, "black");
     });
   }
   

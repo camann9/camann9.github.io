@@ -89,6 +89,7 @@ class Controller {
       $('#currentJson').addClass("incorrect");
       return;
     }
+    this.clearSelection();
     this.onModelChange(false);
   }
   

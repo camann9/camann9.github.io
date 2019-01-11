@@ -61,8 +61,18 @@ class ViewConfig {
       context.font = (this.pixelScale * 10) + 'pt sans serif';
       context.fillText(id, pos.x + radius, pos.y);
     }
+    if (!!supportType) {
+      context.beginPath();
+      if (supportType == "p") {
+        this.drawPinnedSupport(context, pos, radius);
+      } else if (supportType.startsWith("r")) {
+        this.drawRollingSupport(context, pos, radius,supportType);
+      }
+      context.strokeStyle = color;
+      context.stroke();
+    }
     // Clear some additional area to make sure we don't get artifacts
-    return {x: pos.x - radius * 2, y: pos.y - radius * 6, width: radius * 6 + textMeasurements.width, height: radius * 12};
+    return {x: pos.x - radius * 12, y: pos.y - radius * 12, width: radius * 24 + textMeasurements.width, height: radius * 24};
   }
   
   drawLineViewCoord(context, x1, y1, x2, y2) {
@@ -81,6 +91,64 @@ class ViewConfig {
     this.drawLineViewCoord(context, x0View, 0, x0View, this.height);
     // x axis
     this.drawLineViewCoord(context, 0, y0View, this.width, y0View);
+  }
+  
+  drawPinnedSupport(context, pos, radius) {
+    // triangle
+    context.moveTo(pos.x, pos.y);
+    context.lineTo(pos.x - radius * 4, pos.y + radius * 3);
+    context.lineTo(pos.x + radius * 4, pos.y + radius * 3);
+    context.lineTo(pos.x, pos.y);
+    
+    // line underneath
+    context.moveTo(pos.x - radius * 8, pos.y + radius * 3);
+    context.lineTo(pos.x + radius * 8, pos.y + radius * 3);
+  }
+  
+  drawRollingSupport(context, pos, radius, type) {
+    // triangle
+    this.moveTo(context, this.translateSupportPoint(pos, type, {x: 0, y: 0}));
+    this.lineTo(context, this.translateSupportPoint(pos, type, {x: -radius * 4, y: radius * 3}));
+    this.lineTo(context, this.translateSupportPoint(pos, type, {x: radius * 4, y: radius * 3}));
+    this.lineTo(context, this.translateSupportPoint(pos, type, {x: 0, y: 0}));
+    
+    // two rollers
+    this.circle(context, this.translateSupportPoint(pos, type, {x: -radius * 3, y: radius * 4}), radius);
+    this.circle(context, this.translateSupportPoint(pos, type, {x: radius * 3, y: radius * 4}), radius);
+    
+    // line underneath
+    this.moveTo(context, this.translateSupportPoint(pos, type, {x: -radius * 8, y: radius * 5}));
+    this.lineTo(context, this.translateSupportPoint(pos, type, {x: radius * 8, y: radius * 5}));
+  }
+  
+  moveTo(context, pos) {
+    context.moveTo(pos.x, pos.y);
+  }
+  
+  lineTo(context, pos) {
+    context.lineTo(pos.x, pos.y);
+  }
+  
+  circle(context, pos, radius) {
+    // Arc starts at zero degrees (on the right) so we need to move pen there
+    // before we start drawing
+    context.moveTo(pos.x + radius, pos.y);
+    context.arc(pos.x, pos.y, radius, 0, 2 * Math.PI, false);
+  }
+  
+  translateSupportPoint(centerPoint, type, offset) {
+    if (type == "rt") {
+      offset.y = -offset.y;
+    }
+    if (type == "rr" || type == "rl") {
+      let temp = offset.x;
+      offset.x = offset.y;
+      offset.y = temp;
+      if (type == "rl") {
+        offset.x = -offset.x;
+      }
+    }
+    return {x: centerPoint.x + offset.x, y: centerPoint.y + offset.y};
   }
   
   xToView(x) {

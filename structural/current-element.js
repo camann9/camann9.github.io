@@ -27,7 +27,7 @@ class CurrentElement {
       let point = this.model.points[selection.id];
       // Draw new point and store location
       let pointViewCoord = this.viewConfig.modelCoordToView(point);
-      this.area = this.viewConfig.drawDotViewCoord(canvasContext, pointViewCoord, point.id, point.supportType, "red");
+      this.area = this.viewConfig.drawDotViewCoord(canvasContext, pointViewCoord, point.id, point.support, "red");
     }
   }
   
