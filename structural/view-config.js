@@ -1,11 +1,12 @@
 class ViewConfig {
-  constructor(width, height, startX, startY, scale, pixelScale) {
+  constructor(width, height, startX, startY, scale, pixelScale, displayIds) {
     this.width = width;
     this.height = height;
     this.startX = startX;
     this.startY = startY;
     this.scale = scale;
     this.pixelScale = pixelScale;
+    this.displayIds = displayIds;
   }
   
   setDisplaySize(width, height) {
@@ -17,6 +18,14 @@ class ViewConfig {
     this.startX = startX;
     this.startY = startY;
     this.scale = scale;
+  }
+  
+  setDisplayIds(displayIds) {
+    this.displayIds = displayIds;
+  }
+  
+  toggleDisplayIds() {
+    this.displayIds = !this.displayIds;
   }
   
   zoom(amount, mousePos) {
@@ -37,18 +46,23 @@ class ViewConfig {
     context.clearRect(area.x, area.y, area.width, area.height);
   }
   
-  drawDot(context, pos, color) {
-    this.drawDotViewCoord(context, this.modelCoordToView(pos), color);
+  drawDot(context, pos, id, supportType, color) {
+    this.drawDotViewCoord(context, this.modelCoordToView(pos), id, supportType, color);
   }
   
-  drawDotViewCoord(context, pos, color) {
+  drawDotViewCoord(context, pos, id, supportType, color) {
     let radius = this.pixelScale * 2;
     context.beginPath();
     context.arc(pos.x, pos.y, radius, 0, 2 * Math.PI, false);
     context.fillStyle = color == null ? 'black' : color;
     context.fill();
+    let textMeasurements = context.measureText(id);
+    if (this.displayIds && !!id) {
+      context.font = (this.pixelScale * 10) + 'pt sans serif';
+      context.fillText(id, pos.x + radius, pos.y);
+    }
     // Clear some additional area to make sure we don't get artifacts
-    return {x: pos.x - radius * 2, y: pos.y - radius * 2, width: radius * 4, height: radius * 4};
+    return {x: pos.x - radius * 2, y: pos.y - radius * 6, width: radius * 6 + textMeasurements.width, height: radius * 12};
   }
   
   drawLineViewCoord(context, x1, y1, x2, y2) {

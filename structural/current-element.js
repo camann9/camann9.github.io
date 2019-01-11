@@ -12,7 +12,7 @@ class CurrentElement {
     let canvasContext = this.canvas.getContext("2d");
     this.clear();
     // Draw new point and store location
-    this.area = this.viewConfig.drawDotViewCoord(canvasContext, this.viewConfig.pageCoordToView(pos), "green");
+    this.area = this.viewConfig.drawDotViewCoord(canvasContext, this.viewConfig.pageCoordToView(pos), null, null, "green");
   }
   
   drawSelection(selection) {
@@ -27,7 +27,7 @@ class CurrentElement {
       let point = this.model.points[selection.id];
       // Draw new point and store location
       let pointViewCoord = this.viewConfig.modelCoordToView(point);
-      this.area = this.viewConfig.drawDotViewCoord(canvasContext, pointViewCoord, "red");
+      this.area = this.viewConfig.drawDotViewCoord(canvasContext, pointViewCoord, point.id, point.supportType, "red");
     }
   }
   

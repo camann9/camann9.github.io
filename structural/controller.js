@@ -47,6 +47,9 @@ class Controller {
     } else if(event.key == "d") {
       this.removeSelected();
       this.onModelChange(true);
+    } else if(event.key == "i") {
+      this.model.viewConfig.toggleDisplayIds();
+      this.onModelChange(true);
     } else {
       return;
     }
@@ -213,7 +216,7 @@ class Controller {
     $('#currentElementCanvas').click($.proxy(this.onClick, this));
     $('#currentElementCanvas').on('wheel', $.proxy(this.onWheel, this));
     $('#currentJson').change($.proxy(this.onJsonChange, this));
-    $('#propertiesTab').find("input").change($.proxy(this.onPropertyChange, this));
+    $('#propertiesTab').find("input,select").change($.proxy(this.onPropertyChange, this));
     $('#propertiesButton').click(() => {this.view.displayTab("properties")});
     $('#jsonButton').click(() => {this.view.displayTab("json")});
   }

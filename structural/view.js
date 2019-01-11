@@ -25,7 +25,9 @@ class View {
     // First first visible child of input field container
     let subContainer = $("#" + type).children(":visible");
     // Then select first input element in that container
-    subContainer.children("input").first().select();
+    let firstChild = subContainer.children("input,select").first();
+    firstChild.focus();
+    firstChild.select();
   }
   
   advanceFocus() {
@@ -33,11 +35,13 @@ class View {
     if (focussed.length == 0) {
       return false;
     }
-    let next = focussed.nextAll("input").first();
+    let next = focussed.nextAll("input,select").first();
     if (next.length == 0) {
       // wrap
-      next = focussed.parent().children("input").first();
+      next = focussed.parent().children("input,select").first();
     }
+    next.focus();
+    // Select so user can overwrite text
     next.select();
     // Consume event so we don't get a comma in input box
     return true;
@@ -45,7 +49,7 @@ class View {
   
   drawModel(canvasContext) {
     Object.values(this.model.points).forEach((p) => {
-      this.viewConfig.drawDot(canvasContext, p);
+      this.viewConfig.drawDot(canvasContext, p, p.id, p.supportType, "black");
     });
   }
   

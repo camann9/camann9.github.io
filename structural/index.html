@@ -30,7 +30,15 @@
 			  	</div>
 			  	<div id="pointProperties">
 					x: <input type="text" id="propPointX"><br>
-					y: <input type="text" id="propPointY">
+					y: <input type="text" id="propPointY"><br>
+					support: <select class="supportSelect">
+					  <option value="n">none</option>
+					  <option value="f">f (fixed)</option>
+					  <option value="rl">rl (rolling left)</option>
+					  <option value="rr">rr (rolling right)</option>
+					  <option value="rt">rl (rolling top)</option>
+					  <option value="rb">rr (rolling bottom)</option>
+					</select>
 			  	</div>
 			</div>
 			<div id="jsonTab">
@@ -40,8 +48,16 @@
 	</div>
 	<div id="measureInputFieldsContainer">
 		<div id="locationFields">
-			x:<input type="text" id="xPos">, y:<input type="text"
-				id="yPos">
+			x:<input type="text" id="xPos">
+			, y:<input type="text" id="yPos">
+		    , support:<select class="supportSelect">
+			  <option value="n">none</option>
+			  <option value="f">f (fixed)</option>
+			  <option value="rl">rl (rolling left)</option>
+			  <option value="rr">rr (rolling right)</option>
+			  <option value="rt">rl (rolling top)</option>
+			  <option value="rb">rr (rolling bottom)</option>
+			</select>
 		</div>
 	</div>
 </body>

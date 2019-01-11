@@ -56,9 +56,8 @@ $(function() {
     measureInputFieldsPosition.top += canvasDisplayHeight - measureInputFields.height();
     measureInputFieldsPosition.left += canvasDisplayWidth - measureInputFields.width();
     measureInputFields.offset(measureInputFieldsPosition);
-
-    // Repaint canvas after layout
-    view.paint();
+    
+    controller.onModelChange(true);
   }
 
   controller.installHandlers();
@@ -69,5 +68,4 @@ $(function() {
   view.displayTab("properties");
   view.hideProperties();
   layout();
-  controller.onModelChange(true);
 })

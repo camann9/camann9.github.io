@@ -1,7 +1,7 @@
 class Model {
   constructor(json) {
     // Set initial values. This will be updated if required
-    this.viewConfig = new ViewConfig(100, 100, -10, 10, 10, PIXEL_RATIO);
+    this.viewConfig = new ViewConfig(100, 100, -10, 10, 10, PIXEL_RATIO, false);
     this.points = {};
     this.maxPointId = 0;
     this.updateFromJson(json ? json : "{}");
@@ -19,6 +19,7 @@ class Model {
     if (parsed.viewConfig) {
       let v = parsed.viewConfig;
       this.viewConfig.setStartAndScale(v.startX, v.startY, v.scale);
+      this.viewConfig.setDisplayIds(v.displayIds);
     }
   }
   
@@ -73,7 +74,8 @@ class Model {
     output.viewConfig = {
         startX: this.viewConfig.startX,
         startY: this.viewConfig.startY,
-        scale: this.viewConfig.scale
+        scale: this.viewConfig.scale,
+        displayIds: this.viewConfig.displayIds
     };
     return JSON.stringify(output);
   }
