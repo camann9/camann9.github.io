@@ -1,6 +1,7 @@
 class CurrentElement {
-  constructor(viewport) {
-    this.viewport = viewport;
+  constructor(model) {
+    this.model = model;
+    this.viewport = model.viewport;
     this.area = null;
     this.canvas = $("#currentElementCanvas").get(0);
   }
@@ -14,13 +15,20 @@ class CurrentElement {
     this.area = this.viewport.drawDotViewCoord(canvasContext, this.viewport.pageCoordToView(pos), "green");
   }
   
-  drawSelectedPoint(point) {
-    // Input is in model coords
-    
+  drawSelection(selection) {
+    if (!selection) {
+      this.clear();
+      return;
+    }
     let canvasContext = this.canvas.getContext("2d");
     this.clear();
-    // Draw new point and store location
-    this.area = this.viewport.drawDotViewCoord(canvasContext, this.viewport.modelCoordToView(point), "red");
+    
+    if (selection.type == "point") {
+      let point = this.model.points[selection.id];
+      // Draw new point and store location
+      let pointViewCoord = this.viewport.modelCoordToView(point);
+      this.area = this.viewport.drawDotViewCoord(canvasContext, pointViewCoord, "red");
+    }
   }
   
   clear() {

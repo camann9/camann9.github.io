@@ -29,6 +29,12 @@ class Model {
     this.points[point.id] = point;
   }
   
+  setPoint(id, pos) {
+    let point = Object.assign({}, pos);
+    point.id = id;
+    this.points[id] = point;
+  }
+  
   removePoint(id) {
     delete this.points[id];
   }

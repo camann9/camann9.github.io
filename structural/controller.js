@@ -30,33 +30,18 @@ class Controller {
       }
       this.view.selectFirstInputField();
     } else if(event.key == ",") {
-      if (!this.mode) {
-        // We're not in any mode so ignore input
-        return;
-      }
       if (!this.view.advanceFocus()) {
         return;
       }
+      this.onModelChange(true);
     } else if(event.key == "Enter") {
-      if (!(this.mode == "point")) {
-        return;
-      }
-      let pos = this.getPosFromInputFields();
-      if (pos == null) {
-        return;
-      }
-      this.model.addPoint(pos);
-      this.view.paint();
-      this.updateModelStorage(true);
-      // Prepare input field for next element
-      this.view.selectFirstInputField();
+      this.placeObjectFromInputFields();
     } else if(event.key == " " || event.key == "Escape") {
       this.mode = null;
       this.clearSelection();
-    } else if(event.key == "Delete" || event.key == "Backspace") {
+    } else if(event.key == "d") {
       this.removeSelected();
-      this.view.paint();
-      this.updateModelStorage(true);
+      this.onModelChange(true);
     } else {
       return;
     }
@@ -77,25 +62,15 @@ class Controller {
     return new Model();
   }
   
-  onClick() {
+  onClick(event) {
     if (!this.mode) {
-      // Select point
-      let pos = this.getPosFromMouseEvent(event);
-      let modelPos = this.viewport.pageCoordToModel(pos);
-      let maxDist = this.viewport.getMaxDistForSelection();
-      let point = this.model.findClosestPoint(modelPos, maxDist);
-      if (point) {
-        this.selection = {id: point.id, type: "point"};
-        // Highlight selected point
-        this.currentElement.drawSelectedPoint(point);
-      }
+      this.select(event);
     } else if (this.mode == "point") {
       this.model.addPoint(this.viewport.pageCoordToModel(this.getPosFromMouseEvent(event)));
       // Prepare input field for next element
       this.view.selectFirstInputField();
     }
-    this.view.paint();
-    this.updateModelStorage(true);
+    this.onModelChange(true);
   }
 
   onJsonChange() {
@@ -106,18 +81,7 @@ class Controller {
       $('#currentJson').addClass("incorrect");
       return;
     }
-    this.updateModelStorage(false);
-    this.view.paint();
-  }
-  
-  updateModelStorage(updateText) {
-    // Populate side bar with model data and store model in cookie
-    let modelJson = this.model.toJson();
-    if (updateText) {
-      $('#currentJson').val(modelJson);
-    }
-    $('#currentJson').removeClass("incorrect");
-    Cookies.set('model', btoa(modelJson));
+    this.onModelChange(false);
   }
   
   onMousemove(event) {
@@ -136,11 +100,34 @@ class Controller {
     } else {
       this.viewport.zoom(1.25, this.mousePos);
     }
-    this.updateModelStorage(true);
-    this.view.paint();
+    this.onModelChange(true);
 
     // Prevent default
     return false;
+  }
+  
+  onPropertyChange() {
+    if (this.selection.type == "point") {
+      let newPoint = {x: $("#propPointX").val(), y: $("#propPointY").val()};
+      this.model.setPoint(this.selection.id, newPoint);
+    }
+    
+  }
+  
+  onModelChange(updateJson) {
+    // Populate side bar with model data, store model in cookie, and update view
+    let modelJson = this.model.toJson();
+    if (updateJson) {
+      $('#currentJson').val(modelJson);
+    }
+    $('#currentJson').removeClass("incorrect");
+    this.updateModelStorage(modelJson);
+    this.view.paint();
+    this.currentElement.drawSelection(this.selection);
+  }
+  
+  updateModelStorage(modelJson) {
+    Cookies.set('model', btoa(modelJson));
   }
   
   getPosFromMouseEvent(event) {
@@ -172,6 +159,35 @@ class Controller {
   clearSelection() {
     this.selection = null;
     this.currentElement.clear();
+    this.view.hideProperties();
+  }
+  
+  select(event) {
+    // Select point
+    let pos = this.getPosFromMouseEvent(event);
+    let modelPos = this.viewport.pageCoordToModel(pos);
+    let maxDist = this.viewport.getMaxDistForSelection();
+    let point = this.model.findClosestPoint(modelPos, maxDist);
+    if (point) {
+      this.selection = {id: point.id, type: "point"};
+      // Highlight selected point and show properties
+      this.currentElement.drawSelection(this.selection);
+      this.view.showProperties("point", point);
+    }
+  }
+  
+  placeObjectFromInputFields() {
+    if (!(this.mode == "point")) {
+      return;
+    }
+    let pos = this.getPosFromInputFields();
+    if (pos == null) {
+      return;
+    }
+    this.model.addPoint(pos);
+    this.onModelChange(true);
+    // Prepare input field for next element
+    this.view.selectFirstInputField();
   }
   
   paint() {
@@ -189,6 +205,7 @@ class Controller {
     $('#currentElementCanvas').click($.proxy(this.onClick, this));
     $('#currentElementCanvas').on('wheel', $.proxy(this.onWheel, this));
     $('#currentJson').change($.proxy(this.onJsonChange, this));
+    $('#propertiesTab').find("input").change($.proxy(this.onPropertyChange, this));
     $('#propertiesButton').click(() => {this.view.displayTab("properties")});
     $('#jsonButton').click(() => {this.view.displayTab("json")});
   }

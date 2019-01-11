@@ -29,12 +29,8 @@ body {
 	height: auto;
 }
 
-#tabContainer div {
-	display: none;
-}
-
-#tabContainer div.activeTabContent {
-	display: block;
+.hidden {
+	display: none;	
 }
 
 #canvasContainer {

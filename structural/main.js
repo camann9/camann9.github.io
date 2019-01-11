@@ -11,8 +11,8 @@ $(function() {
   let model = Controller.getModelFromCookie();
   let simulationState = new SimulationState();
   let viewport = model.viewport;
-  let view = new View(model, simulationState, viewport);
-  let currentElement = new CurrentElement(viewport);
+  let view = new View(model, simulationState);
+  let currentElement = new CurrentElement(model);
   let controller = new Controller(model, simulationState, currentElement, viewport, view);
   
   function setCanvasHeightWidth(canvas, displayWidth, displayHeight) {
@@ -48,7 +48,6 @@ $(function() {
     let tabPane = $("#tabPane");
     tabPane.height(canvasDisplayHeight);
     tabPane.width(width - canvasDisplayWidth -30);
-    view.displayTab("properties");
 
     // The input fields for measures need to be in the lower right hand corner of
     // the canvas
@@ -67,6 +66,8 @@ $(function() {
   $(window).resize(function() {
     requestAnimationFrame(layout);
   });
+  view.displayTab("properties");
+  view.hideProperties();
   layout();
-  controller.updateModelStorage(true);
+  controller.onModelChange(true);
 })

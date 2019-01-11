@@ -1,8 +1,8 @@
 class View {
-  constructor(model, simulationState, viewport) {
+  constructor(model, simulationState) {
     this.model = model;
     this.simulationState = simulationState;
-    this.viewport = viewport;
+    this.viewport = model.viewport;
   }
   
   paint() {
@@ -14,23 +14,33 @@ class View {
   }
   
   selectFirstInputField() {
+    this.selectFirstField("measureInputFieldsContainer");
+  }
+  
+  selectFirstPropertyField() {
+    this.selectFirstField("propertiesTab");
+  }
+  
+  selectFirstField(type) {
     // First first visible child of input field container
-    let subContainer = $("#measureInputFieldsContainer").children(":visible");
-    // Then select fiest input element in that container
+    let subContainer = $("#" + type).children(":visible");
+    // Then select first input element in that container
     subContainer.children("input").first().select();
   }
   
   advanceFocus() {
-    if ($("#xPos").is(":focus")) {
-      $("#yPos").select();
-      return true;
-    } else if ($("#yPos").is(":focus")) {
-      $("#xPos").select();
-      return true;
-    } else {
-      // Nothing to do
+    let focussed = $(":focus");
+    if (focussed.length == 0) {
       return false;
     }
+    let next = focussed.nextAll("input").first();
+    if (next.length == 0) {
+      // wrap
+      next = focussed.parent().children("input").first();
+    }
+    next.select();
+    // Consume event so we don't get a comma in input box
+    return true;
   }
   
   drawModel(canvasContext) {
@@ -50,10 +60,24 @@ class View {
     }
   }
   
+  hideProperties() {
+    this.showProperties("no");
+  }
+  
+  showProperties(name, data) {
+    $("#propertiesTab").children().addClass("hidden");
+    $("#" + name + "Properties").removeClass("hidden");
+    if (name == "point") {
+      $("#propPointX").val(data.x);
+      $("#propPointY").val(data.y);
+    }
+    this.selectFirstPropertyField();
+  }
+  
   displayTab(name) {
     $("#tabButtons").children().removeClass("activeTabButton");
-    $("#tabContainer").children().removeClass("activeTabContent");
+    $("#tabContainer").children().addClass("hidden");
     $("#" + name + "Button").addClass("activeTabButton");
-    $("#" + name + "Tab").addClass("activeTabContent");
+    $("#" + name + "Tab").removeClass("hidden");
   }
 }
