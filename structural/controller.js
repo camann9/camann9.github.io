@@ -8,7 +8,6 @@ class Controller {
     this.mode = null;
     this.mousePos = null;
     this.selection = null;
-    this.selectionType = null;
   }
   
   onKeydown(event) {
@@ -54,6 +53,10 @@ class Controller {
     } else if(event.key == " " || event.key == "Escape") {
       this.mode = null;
       this.clearSelection();
+    } else if(event.key == "Delete" || event.key == "Backspace") {
+      this.removeSelected();
+      this.view.paint();
+      this.updateModelStorage(true);
     } else {
       return;
     }
@@ -82,8 +85,7 @@ class Controller {
       let maxDist = this.viewport.getMaxDistForSelection();
       let point = this.model.findClosestPoint(modelPos, maxDist);
       if (point) {
-        this.selection = point;
-        this.selectionType = "point";
+        this.selection = {id: point.id, type: "point"};
         // Highlight selected point
         this.currentElement.drawSelectedPoint(point);
       }
@@ -158,9 +160,17 @@ class Controller {
     return {x: x, y: y};
   }
   
+  removeSelected() {
+    if (this.selection) {
+      if (this.selection.type == "point") {
+        this.model.removePoint(this.selection.id);
+      }
+    }
+    this.clearSelection();
+  }
+  
   clearSelection() {
     this.selection = null;
-    this.selectionType = null;
     this.currentElement.clear();
   }
   

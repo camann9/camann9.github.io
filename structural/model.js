@@ -29,6 +29,10 @@ class Model {
     this.points[point.id] = point;
   }
   
+  removePoint(id) {
+    delete this.points[id];
+  }
+  
   findClosestPoint(pos, maxDist) {
     let closest = null;
     let shortestDist = Number.MAX_SAFE_INTEGER;
