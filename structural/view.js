@@ -55,8 +55,8 @@ class View {
   
   updateMousePos(pos) {
     let focussed = $(':focus');
-    $("#xPos").val(pos.x);
-    $("#yPos").val(pos.y);
+    $("#measurePointX").val(pos.x);
+    $("#measurePointY").val(pos.y);
     // Re-select field if it's currently focussed so user can enter text
     if (focussed.length > 0
         && focussed.parent().parent('#measureInputFieldsContainer').length > 0) {
@@ -74,6 +74,7 @@ class View {
     if (name == "point") {
       $("#propPointX").val(data.x);
       $("#propPointY").val(data.y);
+      $("#propPointSupport").val(data.support);
     }
     this.selectFirstPropertyField();
   }

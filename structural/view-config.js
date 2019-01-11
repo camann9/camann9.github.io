@@ -104,15 +104,24 @@ class ViewConfig {
   }
   
   viewCoordToModel(pos) {
-    return {x: this.xToModel(pos.x), y: this.yToModel(pos.y)};
+    let point = Object.assign({}, pos);
+    point.x = this.xToModel(pos.x);
+    point.y = this.yToModel(pos.y);
+    return point;
   }
   
   modelCoordToView(pos) {
-    return {x: this.xToView(pos.x), y: this.yToView(pos.y)};
+    let point = Object.assign({}, pos);
+    point.x = this.xToView(pos.x);
+    point.y = this.yToView(pos.y);
+    return point;
   }
   
   pageCoordToView(pos) {
-    return {x: this.pixelScale * pos.x, y: this.pixelScale * pos.y};
+    let point = Object.assign({}, pos);
+    point.x = this.pixelScale * pos.x;
+    point.y = this.pixelScale * pos.y;
+    return point;
   }
   
   getMaxDistForSelection() {

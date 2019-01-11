@@ -9,11 +9,15 @@ class Model {
 
   updateFromJson(json) {
     let parsed = JSON.parse(json);
-    if (parsed.points && parsed.points.length > 0) {
+    if (parsed.points) {
       this.points = {};
       parsed.points.forEach((p) => {this.points[p.id] = p;});
       // find max
-      this.maxPointId = Math.max.apply(null, Object.keys(this.points));
+      if (parsed.points.length == 0) {
+        this.maxPointId = 0;
+      } else {
+        this.maxPointId = Math.max.apply(null, Object.keys(this.points));
+      }
     }
     
     if (parsed.viewConfig) {

@@ -36,7 +36,7 @@ class Controller {
       this.onModelChange(true);
     } else if(event.key == "Enter") {
       if (this.mode == "point") {
-        this.placeObjectFromInputFields();
+        this.placeObjectFromMeasureFields();
       } else if (this.selection) {
         // Trigger change on current input field
         this.onPropertyChange();
@@ -74,7 +74,7 @@ class Controller {
     if (!this.mode) {
       this.select(event);
     } else if (this.mode == "point") {
-      this.model.addPoint(this.viewConfig.pageCoordToModel(this.getPosFromMouseEvent(event)));
+      this.model.addPoint(this.viewConfig.pageCoordToModel(this.getPointFromMouseEvent(event)));
       // Prepare input field for next element
       this.view.selectFirstInputField();
       this.onModelChange(true);
@@ -119,7 +119,7 @@ class Controller {
       return;
     }
     if (this.selection.type == "point") {
-      let newPoint = {x: $("#propPointX").val(), y: $("#propPointY").val()};
+      let newPoint = this.getPointFromPropertyFields();
       this.model.setPoint(this.selection.id, newPoint);
     }
     this.onModelChange(true);
@@ -148,14 +148,32 @@ class Controller {
     return {x: x, y: y};
   }
   
-  getPosFromInputFields() {
+  getPointFromMouseEvent(event) {
+    let point = this.getPosFromMouseEvent(event);
+    let pointFromMeasures = this.getPointFromMeasureFields();
+    // Overwrite x/y with mouse pos
+    Object.assign(pointFromMeasures, point);
+    return pointFromMeasures;
+  }
+  
+  getPointFromMeasureFields() {
+    return this.getPointFromInputFields("measure");
+  }
+  
+  getPointFromPropertyFields() {
+    return this.getPointFromInputFields("prop");
+  }
+  
+  getPointFromInputFields(fieldType) {
     let canvasOffset = $('#mainCanvas').offset();
-    let x = parseFloat($("#xPos").val());
-    let y = parseFloat($("#yPos").val());
-    if (x == NaN || y == NaN) {
+    let point = {};
+    point.x = parseFloat($("#" + fieldType + "PointX").val());
+    point.y = parseFloat($("#" + fieldType + "PointY").val());
+    point.support = $("#" + fieldType + "PointSupport").val();
+    if (point.x == NaN || point.y == NaN) {
       return null;
     }
-    return {x: x, y: y};
+    return point;
   }
   
   removeSelected() {
@@ -187,11 +205,11 @@ class Controller {
     }
   }
   
-  placeObjectFromInputFields() {
+  placeObjectFromMeasureFields() {
     if (!(this.mode == "point")) {
       return;
     }
-    let pos = this.getPosFromInputFields();
+    let pos = this.getPointFromMeasureFields();
     if (pos == null) {
       return;
     }
