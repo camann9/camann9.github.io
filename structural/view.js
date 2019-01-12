@@ -93,11 +93,16 @@ class View {
     $("#" + name + "Tab").removeClass("hidden");
   }
   
-  switchMeasureInputView(mode) {
+  switchMode(mode) {
     let modeMap = {line: "#lineFields", point: "#pointFields", null: "#mousePosFields"};
     let id = modeMap[mode];
     $("#measureInputFieldsContainer").children().addClass("hidden");
     $(id).removeClass("hidden");
+    if (!!mode) {
+      this.selectFirstInputField();
+    }
+    // Rearrange input fields
+    this.layout();
   }
   
   setCanvasHeightWidth(canvas, displayWidth, displayHeight) {

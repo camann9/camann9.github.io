@@ -28,12 +28,10 @@ class Controller {
       if(this.mousePos) {
         this.currentElement.drawDot(this.mousePos);
       }
-      this.view.switchMeasureInputView(this.mode);
-      this.view.selectFirstInputField();
+      this.view.switchMode(this.mode);
     } else if(event.key == "l") {
       this.mode = "line";
-      this.view.switchMeasureInputView(this.mode);
-      this.view.selectFirstInputField();
+      this.view.switchMode(this.mode);
     } else if(event.key == ",") {
       if (!this.view.advanceFocus()) {
         return;
@@ -49,7 +47,7 @@ class Controller {
     } else if(event.key == " " || event.key == "Escape") {
       this.mode = null;
       this.clearSelection();
-      this.view.switchMeasureInputView(this.mode);
+      this.view.switchMode(this.mode);
     } else if(event.key == "d") {
       this.removeSelected();
       this.onModelChange(true);

@@ -22,7 +22,6 @@ $(function() {
   });
   view.displayTab("properties");
   view.hideProperties();
-  view.switchMeasureInputView(null);
-  view.layout();
+  view.switchMode(null);
   controller.onModelChange(true);
 })
