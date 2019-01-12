@@ -1,6 +1,7 @@
 class View {
-  constructor(model, simulationState) {
+  constructor(model, currentElement, simulationState) {
     this.model = model;
+    this.currentElement = currentElement;
     this.simulationState = simulationState;
     this.viewConfig = model.viewConfig;
   }
@@ -11,6 +12,7 @@ class View {
     this.viewConfig.clear(canvasContext);
     this.viewConfig.drawAxes(canvasContext);
     this.drawModel(canvasContext);
+    this.currentElement.redrawSelection();
   }
   
   selectFirstInputField() {
@@ -55,8 +57,13 @@ class View {
   
   updateMousePos(pos) {
     let focussed = $(':focus');
+    
+    // Update everything. Either of them are going to be hidden but updating both doesn't hurt
     $("#measurePointX").val(pos.x);
     $("#measurePointY").val(pos.y);
+    $("#mousePosX").val(pos.x);
+    $("#mousePosY").val(pos.y);
+ 
     // Re-select field if it's currently focussed so user can enter text
     if (focussed.length > 0
         && focussed.parent().parent('#measureInputFieldsContainer').length > 0) {
@@ -84,5 +91,57 @@ class View {
     $("#tabContainer").children().addClass("hidden");
     $("#" + name + "Button").addClass("activeTabButton");
     $("#" + name + "Tab").removeClass("hidden");
+  }
+  
+  switchMeasureInputView(mode) {
+    let modeMap = {line: "#lineFields", point: "#pointFields", null: "#mousePosFields"};
+    let id = modeMap[mode];
+    $("#measureInputFieldsContainer").children().addClass("hidden");
+    $(id).removeClass("hidden");
+  }
+  
+  setCanvasHeightWidth(canvas, displayWidth, displayHeight) {
+    // For canvas use HTML properties (for the interior size of the canvas)
+    // and CSS properties (for the display size on the page) which will result
+    // in non-blurry rendering
+    canvas.width = displayWidth * PIXEL_RATIO;
+    canvas.height = displayHeight * PIXEL_RATIO;
+    canvas.style.width = displayWidth + "px";
+    canvas.style.height = displayHeight + "px";
+    this.viewConfig.setDisplaySize(displayWidth * PIXEL_RATIO,
+        displayHeight * PIXEL_RATIO);
+  }
+
+  layout() {
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let canvasDisplayWidth = (width * 0.7);
+    let canvasDisplayHeight = (height - 30);
+    
+    let canvasContainer = $("#canvasContainer");
+    canvasContainer.width(canvasDisplayWidth);
+    canvasContainer.height(canvasDisplayHeight);
+    let mainCanvas = $("#mainCanvas");
+    this.setCanvasHeightWidth(mainCanvas.get(0), canvasDisplayWidth, canvasDisplayHeight);
+    let currentElementCanvas = $("#currentElementCanvas");
+    this.setCanvasHeightWidth(currentElementCanvas.get(0), canvasDisplayWidth, canvasDisplayHeight);
+    // The current element canvas is exactly on top of the main canvas
+    mainCanvas.offset(canvasContainer.offset());
+    currentElementCanvas.offset(canvasContainer.offset());
+
+    // Tabs on right hand side
+    let tabPane = $("#tabPane");
+    tabPane.height(canvasDisplayHeight);
+    tabPane.width(width - canvasDisplayWidth -30);
+
+    // The input fields for measures need to be in the lower right hand corner of
+    // the canvas
+    let measureInputFields = $("#measureInputFieldsContainer");
+    let measureInputFieldsPosition = $("#mainCanvas").offset();
+    measureInputFieldsPosition.top += canvasDisplayHeight - measureInputFields.height();
+    measureInputFieldsPosition.left += canvasDisplayWidth - measureInputFields.width();
+    measureInputFields.offset(measureInputFieldsPosition);
+    
+    this.paint();
   }
 }

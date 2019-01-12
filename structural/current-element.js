@@ -4,6 +4,7 @@ class CurrentElement {
     this.viewConfig = model.viewConfig;
     this.area = null;
     this.canvas = $("#currentElementCanvas").get(0);
+    this.selection = null;
   }
   
   drawDot(pos) {
@@ -16,15 +17,19 @@ class CurrentElement {
   }
   
   drawSelection(selection) {
-    if (!selection) {
-      this.clear();
+    this.selection = selection;
+    this.redrawSelection();
+  }
+  
+  redrawSelection() {
+    this.clear();
+    if (!this.selection) {
       return;
     }
-    let canvasContext = this.canvas.getContext("2d");
-    this.clear();
     
-    if (selection.type == "point") {
-      let point = this.model.points[selection.id];
+    let canvasContext = this.canvas.getContext("2d");
+    if (this.selection.type == "point") {
+      let point = this.model.points[this.selection.id];
       // Draw new point and store location
       let pointViewCoord = this.viewConfig.modelCoordToView(point);
       this.area = this.viewConfig.drawDotViewCoord(canvasContext, pointViewCoord, point.id, point.support, "red");

@@ -40,6 +40,10 @@
 					  <option value="rb">rb (rolling bottom)</option>
 					</select>
 			  	</div>
+			  	<div id="lineProperties">
+					start: <input type="text" id="propLineStart"><br>
+					end: <input type="text" id="propLineEnd">
+			  	</div>
 			</div>
 			<div id="jsonTab">
 			  <textarea id="currentJson"></textarea>
@@ -47,7 +51,11 @@
 		</div>
 	</div>
 	<div id="measureInputFieldsContainer">
-		<div id="locationFields">
+	    <div id="mousePosFields">
+			x:<input type="text" id="mousePosX">
+			, y:<input type="text" id="mousePosY">
+		</div>
+		<div id="pointFields">
 			x:<input type="text" id="measurePointX">
 			, y:<input type="text" id="measurePointY">
 		    , support:<select class="supportSelect" id="measurePointSupport">
@@ -58,6 +66,10 @@
 			  <option value="rt">rt (rolling top)</option>
 			  <option value="rb">rb (rolling bottom)</option>
 			</select>
+		</div>
+		<div id="lineFields">
+			start:<input type="text" id="measureLineStart">
+			, end:<input type="text" id="measureLineEnd">
 		</div>
 	</div>
 </body>
