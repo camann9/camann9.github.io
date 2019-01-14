@@ -21,6 +21,6 @@ $(function() {
     requestAnimationFrame(view.layout.bind(view));
   });
   controller.onModeChange();
-  this.view.displayTab("properties");
+  view.displayTab("properties");
   controller.onModelChange(true);
 })

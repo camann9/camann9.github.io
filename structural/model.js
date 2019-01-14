@@ -67,19 +67,30 @@ class Model {
   }
   
   findClosestPoint(pos, maxDist) {
+    return this.findClosest(pos, maxDist, this.points, this.getDist.bind(this));
+  }
+  
+  findClosestLine(pos, maxDist) {
+    return this.findClosest(pos, maxDist, this.lines, this.getLineDist.bind(this));
+  }
+  
+  findClosest(pos, maxDist, input, distMethod) {
     let closest = null;
     let shortestDist = Number.MAX_SAFE_INTEGER;
-    Object.values(this.points).forEach((p) => {
-      if (closest == null
-          || this.getDist(p, pos) < shortestDist) {
-        shortestDist = this.getDist(p, pos);
+    Object.values(input).forEach((p) => {
+      let dist = distMethod(p, pos);
+      if (dist != null && closest == null) {
+        shortestDist = dist;
+        closest = p;
+      } else if(dist != null && dist < shortestDist) {
+        shortestDist = dist;
         closest = p;
       }
     });
     if (!closest) {
       return null;
     }
-    if (this.getDist(closest, pos) > maxDist) {
+    if (distMethod(closest, pos) > maxDist) {
       return null;
     }
     return closest;
@@ -89,6 +100,27 @@ class Model {
     let dx = p1.x - p2.x;
     let dy = p1.y - p2.y;
     return Math.sqrt(dx * dx + dy * dy);
+  }
+  
+  getLineDist(line, point) {
+    let p1 = this.points[line.start];
+    let p2 = this.points[line.end];
+    if (!p1 || !p2) {
+      return;
+    }
+    
+    let distP1 = this.getDist(point, p1);
+    let distP2 = this.getDist(point, p2);
+    let endpointDist = this.getDist(p1, p2);
+    if (distP1 > endpointDist || distP2 > endpointDist) {
+      // User didn't click between endpoints so didn't select line
+      return null;
+    }
+    
+    let dx = p2.x - p1.x;
+    let dy = p2.y - p1.y;
+    let lineDist = Math.abs(dy * point.x - dx * point.y + p2.x * p1.y - p2.y * p1.x) / Math.sqrt(dx * dx + dy * dy);
+    return lineDist;
   }
   
   toJson() {

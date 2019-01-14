@@ -253,6 +253,16 @@ class Controller {
       // Highlight selected point and show properties
       this.currentElement.drawSelection(this.selection);
       this.view.showProperties("point", point);
+      return
+    }
+    // Select line if we haven't found a point
+    let line = this.getExistingLineFromEvent(event);
+    if (line) {
+      this.selection = {id: line.id, type: "line"};
+      // Highlight selected point and show properties
+      this.currentElement.drawSelection(this.selection);
+      this.view.showProperties("line", line);
+      return
     }
   }
   
@@ -261,6 +271,13 @@ class Controller {
     let modelPos = this.viewConfig.pageCoordToModel(pos);
     let maxDist = this.viewConfig.getMaxDistForSelection();
     return this.model.findClosestPoint(modelPos, maxDist);
+  }
+  
+  getExistingLineFromEvent(event) {
+    let pos = this.getPosFromMouseEvent(event);
+    let modelPos = this.viewConfig.pageCoordToModel(pos);
+    let maxDist = this.viewConfig.getMaxDistForSelection();
+    return this.model.findClosestLine(modelPos, maxDist);
   }
   
   placeObjectFromMeasureFields() {
