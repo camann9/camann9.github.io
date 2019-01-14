@@ -78,7 +78,7 @@ class ViewConfig {
   drawLineModelCoord(context, p1, p2, color) {
     let p1View = this.modelCoordToView(p1);
     let p2View = this.modelCoordToView(p2);
-    this.drawLineViewCoord(context, p1View.x, p1View.y, p2View.x, p2View.y, color);
+    return this.drawLineViewCoord(context, p1View.x, p1View.y, p2View.x, p2View.y, color);
   }
   
   drawLineViewCoord(context, x1, y1, x2, y2, color) {
