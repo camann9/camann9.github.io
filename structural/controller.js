@@ -147,7 +147,7 @@ class Controller {
     if (this.selection.type == "point") {
       let newPoint = this.getPointFromPropertyFields();
       this.model.setPoint(this.selection.id, newPoint);
-    } else if (this.selection.type == "point") {
+    } else if (this.selection.type == "line") {
       let newLine = this.getLineFromPropertyFields();
       if (newLine) {
         this.model.setLine(this.selection.id, newLine);
