@@ -89,6 +89,9 @@ class View {
       $("#propPointX").val(data.x);
       $("#propPointY").val(data.y);
       $("#propPointSupport").val(data.support);
+    } else if (name == "line") {
+      $("#propLineStart").val(data.start);
+      $("#propLineEnd").val(data.end);
     }
     this.selectFirstPropertyField();
   }

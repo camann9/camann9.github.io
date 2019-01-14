@@ -43,13 +43,6 @@ class Model {
     this.points[point.id] = point;
   }
   
-  addLine(startEnd) {
-    // Copy and modify
-    let line = Object.assign({}, startEnd);
-    line.id = ++this.maxId;
-    this.lines[line.id] = line;
-  }
-  
   setPoint(id, pos) {
     let point = Object.assign({}, pos);
     point.id = id;
@@ -65,6 +58,20 @@ class Model {
             .map((l) => l.id);
     linesToDelete.forEach((id) => {delete this.lines[id]});
   }
+  
+  addLine(startEnd) {
+    // Copy and modify
+    let line = Object.assign({}, startEnd);
+    line.id = ++this.maxId;
+    this.lines[line.id] = line;
+  }
+
+  setLine(id, line) {
+    let lineWithId = Object.assign({}, line);
+    line.id = id;
+    this.lines[id] = lineWithId;
+  }
+  
   
   findClosestPoint(pos, maxDist) {
     return this.findClosest(pos, maxDist, this.points, this.getDist.bind(this));
