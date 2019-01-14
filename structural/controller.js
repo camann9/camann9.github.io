@@ -30,7 +30,6 @@ class Controller {
       if(this.mousePos) {
         this.currentElement.drawDot(this.mousePos);
       }
-      this.onModeChange();
     } else if(event.key == "l") {
       this.mode = "line";
     } else if(event.key == ",") {
@@ -47,6 +46,7 @@ class Controller {
       }
     } else if(event.key == " " || event.key == "Escape") {
       this.mode = null;
+      this.clearSelection();
     } else if(event.key == "d") {
       this.removeSelected();
       this.onModelChange(true);
@@ -74,19 +74,33 @@ class Controller {
   }
   
   onModeChange() {
-    this.view.onModeChange(this.mode);
-    this.currentElement.onModeChange();
     this.clearSelection();
+    this.currentElement.onModeChange();
+    this.view.onModeChange(this.mode);
   }
   
   onClick(event) {
     if (!this.mode) {
       this.select(event);
     } else if (this.mode == "point") {
-      this.model.addPoint(this.viewConfig.pageCoordToModel(this.getPointFromMouseEvent(event)));
+      this.model.addPoint(this.viewConfig.pageCoordToModel(this.getNewPointFromEvent(event)));
       // Prepare input field for next element
       this.view.selectFirstInputField();
       this.onModelChange(true);
+    } else if (this.mode == "line") {
+      let point = this.getExistingPointFromEvent(event);
+      if (!point) {
+        return;
+      }
+      if (!!this.currentElement.lineStart) {
+        this.model.addLine({start: this.currentElement.lineStart, end: point.id});
+        // Prepare input field for next element
+        this.currentElement.resetLine();
+        this.view.selectFirstInputField();
+        this.onModelChange(true);
+      } else {
+        this.currentElement.lineStart = point.id;
+      }
     }
   }
 
@@ -107,6 +121,8 @@ class Controller {
     this.view.updateMousePos(this.viewConfig.pageCoordToModel(this.mousePos));
     if (this.mode == "point") {
       this.currentElement.drawDot(this.mousePos);
+    } else if (this.mode == "line") {
+      this.currentElement.drawLine(this.mousePos);
     }
   }
   
@@ -158,7 +174,7 @@ class Controller {
     return {x: x, y: y};
   }
   
-  getPointFromMouseEvent(event) {
+  getNewPointFromEvent(event) {
     let point = this.getPosFromMouseEvent(event);
     let pointFromMeasures = this.getPointFromMeasureFields();
     // Overwrite x/y with mouse pos
@@ -231,16 +247,20 @@ class Controller {
   
   select(event) {
     // Select point
-    let pos = this.getPosFromMouseEvent(event);
-    let modelPos = this.viewConfig.pageCoordToModel(pos);
-    let maxDist = this.viewConfig.getMaxDistForSelection();
-    let point = this.model.findClosestPoint(modelPos, maxDist);
+    let point = this.getExistingPointFromEvent(event);
     if (point) {
       this.selection = {id: point.id, type: "point"};
       // Highlight selected point and show properties
       this.currentElement.drawSelection(this.selection);
       this.view.showProperties("point", point);
     }
+  }
+  
+  getExistingPointFromEvent(event) {
+    let pos = this.getPosFromMouseEvent(event);
+    let modelPos = this.viewConfig.pageCoordToModel(pos);
+    let maxDist = this.viewConfig.getMaxDistForSelection();
+    return this.model.findClosestPoint(modelPos, maxDist);
   }
   
   placeObjectFromMeasureFields() {

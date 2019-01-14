@@ -58,6 +58,12 @@ class Model {
   
   removePoint(id) {
     delete this.points[id];
+    // Remove lines that include this point
+    let linesToDelete = 
+        Object.values(this.lines)
+            .filter((l) => l.start == id || l.end == id)
+            .map((l) => l.id);
+    linesToDelete.forEach((id) => {delete this.lines[id]});
   }
   
   findClosestPoint(pos, maxDist) {

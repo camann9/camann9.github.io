@@ -17,6 +17,25 @@ class CurrentElement {
     this.area = this.viewConfig.drawDotViewCoord(canvasContext, this.viewConfig.pageCoordToView(pos), null, null, "green");
   }
   
+  drawLine(pos) {
+    // Input is in page coords
+    
+    // Only draw if we have a line start
+    if (!this.lineStart) {
+      return;
+    }
+    // Convert start and end point to view coords
+    let startViewCoord = this.viewConfig.modelCoordToView(this.model.points[this.lineStart]);
+    let endViewCoord = this.viewConfig.pageCoordToView(pos);
+    
+    // Draw
+    let canvasContext = this.canvas.getContext("2d");
+    this.clear();
+    // Draw new point and store location
+    this.area = this.viewConfig.drawLineViewCoord(canvasContext,
+        startViewCoord.x, startViewCoord.y, endViewCoord.x, endViewCoord.y, "green");
+  }
+  
   drawSelection(selection) {
     this.selection = selection;
     this.redrawSelection();
@@ -44,8 +63,13 @@ class CurrentElement {
     }
   }
   
-  onModeChange() {
+  resetLine() {
     this.lineStart = null;
+    this.clear();
+  }
+  
+  onModeChange() {
+    this.resetLine();
     this.selection = null;
     this.clear();
   }

@@ -87,6 +87,12 @@ class ViewConfig {
     context.lineTo(x2, y2);
     context.strokeStyle = color;
     context.stroke();
+    // Compute dirty area
+    let startX = Math.min(x1, x2) - 10;
+    let startY = Math.min(y1, y2) - 10;
+    let width = Math.abs(x1 - x2) + 20;
+    let height = Math.abs(y1 - y2) + 20;
+    return {x: startX, y: startY, width: width, height: height};
   }
   
   drawAxes(context) {
