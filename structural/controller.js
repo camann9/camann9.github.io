@@ -11,6 +11,8 @@ class Controller {
   }
   
   onKeydown(event) {
+    let oldMode = this.mode;
+    
     if ($("#currentJson").is(":focus")) {
       // Nothing to do if user focuses on text area
       // We want to let them enter stuff
@@ -28,10 +30,9 @@ class Controller {
       if(this.mousePos) {
         this.currentElement.drawDot(this.mousePos);
       }
-      this.view.switchMode(this.mode);
+      this.onModeChange();
     } else if(event.key == "l") {
       this.mode = "line";
-      this.view.switchMode(this.mode);
     } else if(event.key == ",") {
       if (!this.view.advanceFocus()) {
         return;
@@ -46,8 +47,6 @@ class Controller {
       }
     } else if(event.key == " " || event.key == "Escape") {
       this.mode = null;
-      this.clearSelection();
-      this.view.switchMode(this.mode);
     } else if(event.key == "d") {
       this.removeSelected();
       this.onModelChange(true);
@@ -59,8 +58,8 @@ class Controller {
     }
     
     // If we're no longer in selection mode we need to clear the selection
-    if (!!this.mode) {
-      this.clearSelection();
+    if (oldMode != this.mode) {
+      this.onModeChange();
     }
     // If we treated the event (not "else" case) then we prevent default
     event.preventDefault();
@@ -72,6 +71,12 @@ class Controller {
       return new Model(atob(modelBase64));
     }
     return new Model();
+  }
+  
+  onModeChange() {
+    this.view.onModeChange(this.mode);
+    this.currentElement.onModeChange();
+    this.clearSelection();
   }
   
   onClick(event) {
@@ -93,7 +98,7 @@ class Controller {
       $('#currentJson').addClass("incorrect");
       return;
     }
-    this.clearSelection();
+    this.onModeChange();
     this.onModelChange(false);
   }
   
@@ -215,7 +220,7 @@ class Controller {
         this.model.removePoint(this.selection.id);
       }
     }
-    this.clearSelection();
+    this.onModeChange();
   }
   
   clearSelection() {

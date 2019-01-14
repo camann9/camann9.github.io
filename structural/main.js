@@ -20,8 +20,7 @@ $(function() {
   $(window).resize(function() {
     requestAnimationFrame(view.layout.bind(view));
   });
-  view.displayTab("properties");
-  view.hideProperties();
-  view.switchMode(null);
+  controller.onModeChange();
+  this.view.displayTab("properties");
   controller.onModelChange(true);
 })

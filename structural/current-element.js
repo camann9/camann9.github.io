@@ -5,6 +5,7 @@ class CurrentElement {
     this.area = null;
     this.canvas = $("#currentElementCanvas").get(0);
     this.selection = null;
+    this.lineStart = null;
   }
   
   drawDot(pos) {
@@ -41,5 +42,11 @@ class CurrentElement {
       let canvasContext = this.canvas.getContext("2d");
       this.viewConfig.clearAreaViewCoord(canvasContext, this.area);
     }
+  }
+  
+  onModeChange() {
+    this.lineStart = null;
+    this.selection = null;
+    this.clear();
   }
 }

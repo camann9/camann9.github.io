@@ -100,7 +100,7 @@ class View {
     $("#" + name + "Tab").removeClass("hidden");
   }
   
-  switchMode(mode) {
+  onModeChange(mode) {
     let modeMap = {line: "#lineFields", point: "#pointFields", null: "#mousePosFields"};
     let id = modeMap[mode];
     $("#measureInputFieldsContainer").children().addClass("hidden");
