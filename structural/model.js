@@ -2,23 +2,32 @@ class Model {
   constructor(json) {
     // Set initial values. This will be updated if required
     this.viewConfig = new ViewConfig(100, 100, -10, 10, 10, PIXEL_RATIO, false);
-    this.points = {};
-    this.maxPointId = 0;
+    this.maxId = 0;
     this.updateFromJson(json ? json : "{}");
   }
 
   updateFromJson(json) {
     let parsed = JSON.parse(json);
+    this.points = {};
+    this.lines = {};
     if (parsed.points) {
       this.points = {};
       parsed.points.forEach((p) => {this.points[p.id] = p;});
-      // find max
-      if (parsed.points.length == 0) {
-        this.maxPointId = 0;
-      } else {
-        this.maxPointId = Math.max.apply(null, Object.keys(this.points));
-      }
     }
+    let maxPointId = 0;
+    if (Object.keys(this.points).length != 0) {
+      maxPointId = Math.max.apply(null, Object.keys(this.points));
+    }
+    
+    if (parsed.lines) {
+      this.lines = {};
+      parsed.lines.forEach((l) => {this.lines[l.id] = l;});
+    }
+    let maxLineId = 0;
+    if (Object.keys(this.lines).length != 0) {
+      maxLineId = Math.max.apply(null, Object.keys(this.lines));
+    }
+    this.maxId = Math.max(maxPointId, maxLineId);
     
     if (parsed.viewConfig) {
       let v = parsed.viewConfig;
@@ -30,8 +39,15 @@ class Model {
   addPoint(pos) {
     // Copy and modify
     let point = Object.assign({}, pos);
-    point.id = ++this.maxPointId;
+    point.id = ++this.maxId;
     this.points[point.id] = point;
+  }
+  
+  addLine(startEnd) {
+    // Copy and modify
+    let line = Object.assign({}, startEnd);
+    line.id = ++this.maxId;
+    this.lines[line.id] = line;
   }
   
   setPoint(id, pos) {
@@ -75,6 +91,10 @@ class Model {
     Object.values(this.points).forEach((p) => {
       output.points.push(this.jsonPoint(p));
     });
+    output.lines = [];
+    Object.values(this.lines).forEach((l) => {
+      output.lines.push(this.jsonLine(l));
+    });
     output.viewConfig = {
         startX: this.viewConfig.startX,
         startY: this.viewConfig.startY,
@@ -86,5 +106,9 @@ class Model {
   
   jsonPoint(p) {
     return p;
+  }
+  
+  jsonLine(l) {
+    return l;
   }
 }

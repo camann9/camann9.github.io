@@ -38,7 +38,7 @@ class Controller {
       }
       this.onModelChange(true);
     } else if(event.key == "Enter") {
-      if (this.mode == "point") {
+      if (this.mode == "point" || this.mode == "line") {
         this.placeObjectFromMeasureFields();
       } else if (this.selection) {
         // Trigger change on currently selected object
@@ -175,10 +175,38 @@ class Controller {
     point.x = parseFloat($("#" + fieldType + "PointX").val());
     point.y = parseFloat($("#" + fieldType + "PointY").val());
     point.support = $("#" + fieldType + "PointSupport").val();
-    if (point.x == NaN || point.y == NaN) {
+    if (isNaN(point.x) || isNaN(point.y)) {
       return null;
     }
     return point;
+  }
+  
+  getLineFromMeasureFields() {
+    return this.getLineFromInputFields("measure");
+  }
+  
+  getLineFromPropertyFields() {
+    return this.getLineFromInputFields("prop");
+  }
+  
+  getLineFromInputFields(fieldType) {
+    let canvasOffset = $('#mainCanvas').offset();
+    let line = {};
+    line.start = parseInt($("#" + fieldType + "LineStart").val());
+    line.end = parseInt($("#" + fieldType + "LineEnd").val());
+    // The two points need to be integers
+    if (isNaN(line.start) || isNaN(line.end)) {
+      return null;
+    }
+    // The two points need to be different
+    if (line.start == line.end) {
+      return null;
+    }
+    // The two points need to be valid
+    if (!this.model.points[line.start] || !this.model.points[line.end]) {
+      return null;
+    }
+    return line;
   }
   
   removeSelected() {
@@ -211,14 +239,22 @@ class Controller {
   }
   
   placeObjectFromMeasureFields() {
-    if (!(this.mode == "point")) {
+    if (!this.mode) {
       return;
     }
-    let pos = this.getPointFromMeasureFields();
-    if (pos == null) {
-      return;
+    if (this.mode == "point") {
+      let pos = this.getPointFromMeasureFields();
+      if (pos == null) {
+        return;
+      }
+      this.model.addPoint(pos);
+    } else if (this.mode == "line") {
+      let startEnd = this.getLineFromMeasureFields();
+      if (startEnd == null) {
+        return;
+      }
+      this.model.addLine(startEnd);
     }
-    this.model.addPoint(pos);
     this.onModelChange(true);
     // Prepare input field for next element
     this.view.selectFirstInputField();
