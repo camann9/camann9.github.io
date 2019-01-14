@@ -56,10 +56,12 @@ class ViewConfig {
     context.arc(pos.x, pos.y, radius, 0, 2 * Math.PI, false);
     context.fillStyle = color == null ? 'black' : color;
     context.fill();
-    let textMeasurements = context.measureText(id);
+    
+    let pointText = "p" + id;
+    let textMeasurements = context.measureText(pointText);
     if (this.displayIds && !!id) {
       context.font = (this.pixelScale * 10) + 'pt sans serif';
-      context.fillText(id, pos.x + radius, pos.y);
+      context.fillText(pointText, pos.x + radius, pos.y);
     }
     if (!!supportType) {
       context.beginPath();
@@ -75,22 +77,32 @@ class ViewConfig {
     return {x: pos.x - radius * 12, y: pos.y - radius * 12, width: radius * 24 + textMeasurements.width, height: radius * 24};
   }
   
-  drawLineModelCoord(context, p1, p2, color) {
+  drawLineModelCoord(context, p1, p2, id, color) {
     let p1View = this.modelCoordToView(p1);
     let p2View = this.modelCoordToView(p2);
-    return this.drawLineViewCoord(context, p1View.x, p1View.y, p2View.x, p2View.y, color);
+    return this.drawLineViewCoord(context, p1View.x, p1View.y, p2View.x, p2View.y, id, color);
   }
   
-  drawLineViewCoord(context, x1, y1, x2, y2, color) {
+  drawLineViewCoord(context, x1, y1, x2, y2, id, color) {
+    context.fillStyle = color;
+    context.strokeStyle = color;
+
     context.beginPath();
     context.moveTo(x1, y1);
     context.lineTo(x2, y2);
-    context.strokeStyle = color;
     context.stroke();
+    
+    let lineText = "l" + id;
+    let textMeasurements = context.measureText(lineText);
+    if (this.displayIds && !!id) {
+      context.font = (this.pixelScale * 10) + 'pt sans serif';
+      context.fillText("l" + id, (x1 + x2) / 2, (y1 + y2) / 2);
+    }
+
     // Compute dirty area
     let startX = Math.min(x1, x2) - 10;
     let startY = Math.min(y1, y2) - 10;
-    let width = Math.abs(x1 - x2) + 20;
+    let width = Math.abs(x1 - x2) + 20 + textMeasurements.width;
     let height = Math.abs(y1 - y2) + 20;
     return {x: startX, y: startY, width: width, height: height};
   }
@@ -100,9 +112,9 @@ class ViewConfig {
     let y0View = this.yToView(0);
     
     // y axis
-    this.drawLineViewCoord(context, x0View, 0, x0View, this.height, "black");
+    this.drawLineViewCoord(context, x0View, 0, x0View, this.height, null, "black");
     // x axis
-    this.drawLineViewCoord(context, 0, y0View, this.width, y0View, "black");
+    this.drawLineViewCoord(context, 0, y0View, this.width, y0View, null, "black");
   }
   
   drawPinnedSupport(context, pos, radius) {

@@ -92,7 +92,8 @@ class Controller {
       if (!point) {
         return;
       }
-      if (!!this.currentElement.lineStart) {
+      if (!!this.currentElement.lineStart
+          && point.id != this.currentElement.lineStart) {
         this.model.addLine({start: this.currentElement.lineStart, end: point.id});
         // Prepare input field for next element
         this.currentElement.resetLine();
@@ -239,6 +240,8 @@ class Controller {
     if (this.selection) {
       if (this.selection.type == "point") {
         this.model.removePoint(this.selection.id);
+      } else if (this.selection.type == "line") {
+        this.model.removeLine(this.selection.id);
       }
     }
     this.onModeChange();

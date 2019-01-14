@@ -33,7 +33,7 @@ class CurrentElement {
     this.clear();
     // Draw new point and store location
     this.area = this.viewConfig.drawLineViewCoord(canvasContext,
-        startViewCoord.x, startViewCoord.y, endViewCoord.x, endViewCoord.y, "green");
+        startViewCoord.x, startViewCoord.y, endViewCoord.x, endViewCoord.y, null, "green");
   }
   
   drawSelection(selection) {
@@ -61,7 +61,7 @@ class CurrentElement {
         return;
       }
       // Draw new point and store location
-      this.area = this.viewConfig.drawLineModelCoord(canvasContext, p1, p2, "red");
+      this.area = this.viewConfig.drawLineModelCoord(canvasContext, p1, p2, l.id, "red");
     }
   }
   

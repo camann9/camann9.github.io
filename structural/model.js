@@ -59,6 +59,10 @@ class Model {
     linesToDelete.forEach((id) => {delete this.lines[id]});
   }
   
+  removeLine(id) {
+    delete this.lines[id];
+  }
+  
   addLine(startEnd) {
     // Copy and modify
     let line = Object.assign({}, startEnd);

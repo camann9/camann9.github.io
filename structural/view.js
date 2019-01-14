@@ -57,7 +57,7 @@ class View {
       let p1 = this.model.points[l.start];
       let p2 = this.model.points[l.end];
       if (!!p1 && !!p2) {
-        this.viewConfig.drawLineModelCoord(canvasContext, p1, p2, "black");
+        this.viewConfig.drawLineModelCoord(canvasContext, p1, p2, l.id, "black");
       }
     });
   }
