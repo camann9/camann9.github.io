@@ -53,6 +53,13 @@ class View {
     Object.values(this.model.points).forEach((p) => {
       this.viewConfig.drawDot(canvasContext, p, p.id, p.support, "black");
     });
+    Object.values(this.model.lines).forEach((l) => {
+      let p1 = this.model.points[l.start];
+      let p2 = this.model.points[l.end];
+      if (!!p1 && !!p2) {
+        this.viewConfig.drawLineModelCoord(canvasContext, p1, p2, "black");
+      }
+    });
   }
   
   updateMousePos(pos) {

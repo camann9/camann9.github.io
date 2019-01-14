@@ -75,11 +75,17 @@ class ViewConfig {
     return {x: pos.x - radius * 12, y: pos.y - radius * 12, width: radius * 24 + textMeasurements.width, height: radius * 24};
   }
   
-  drawLineViewCoord(context, x1, y1, x2, y2) {
+  drawLineModelCoord(context, p1, p2, color) {
+    let p1View = this.modelCoordToView(p1);
+    let p2View = this.modelCoordToView(p2);
+    this.drawLineViewCoord(context, p1View.x, p1View.y, p2View.x, p2View.y, color);
+  }
+  
+  drawLineViewCoord(context, x1, y1, x2, y2, color) {
     context.beginPath();
-    // Straddle pixels
     context.moveTo(x1, y1);
     context.lineTo(x2, y2);
+    context.strokeStyle = color;
     context.stroke();
   }
   
@@ -88,9 +94,9 @@ class ViewConfig {
     let y0View = this.yToView(0);
     
     // y axis
-    this.drawLineViewCoord(context, x0View, 0, x0View, this.height);
+    this.drawLineViewCoord(context, x0View, 0, x0View, this.height, "black");
     // x axis
-    this.drawLineViewCoord(context, 0, y0View, this.width, y0View);
+    this.drawLineViewCoord(context, 0, y0View, this.width, y0View, "black");
   }
   
   drawPinnedSupport(context, pos, radius) {
