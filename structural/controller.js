@@ -32,13 +32,15 @@ class Controller {
       }
     } else if(event.key == "l") {
       this.mode = "line";
+    } else if(event.key == "w") {
+      this.mode = "weight";
     } else if(event.key == ",") {
       if (!this.view.advanceFocus()) {
         return;
       }
       this.onModelChange(true);
     } else if(event.key == "Enter") {
-      if (this.mode == "point" || this.mode == "line") {
+      if (this.mode == "point" || this.mode == "line" || this.mode == "weight") {
         this.placeObjectFromMeasureFields();
       } else if (this.selection) {
         // Trigger change on currently selected object
@@ -51,7 +53,7 @@ class Controller {
       this.removeSelected();
       this.onModelChange(true);
     } else if(event.key == "i") {
-      this.model.viewConfig.toggleDisplayIds();
+      this.model.viewConfig.toggleDisplayDetails();
       this.onModelChange(true);
     } else {
       return;
@@ -94,13 +96,23 @@ class Controller {
       }
       if (!!this.currentElement.lineStart
           && point.id != this.currentElement.lineStart) {
-        this.model.addLine({start: this.currentElement.lineStart, end: point.id});
+        this.model.addLine(this.model.createLine(this.currentElement.lineStart, point.id));
         // Prepare input field for next element
         this.currentElement.resetLine();
         this.view.selectFirstInputField();
         this.onModelChange(true);
       } else {
         this.currentElement.lineStart = point.id;
+      }
+    } else if (this.mode == "weight") {
+      let line = this.getExistingLineFromEvent(event);
+      if (!line) {
+        return;
+      }
+      let weight = this.getWeightFromMeasureFields();
+      if (!!weight) {
+        line.weightPerMeter = this.getWeightFromMeasureFields().weightPerMeter;
+        this.onModelChange(true);
       }
     }
   }
@@ -218,9 +230,10 @@ class Controller {
   
   getLineFromInputFields(fieldType) {
     let canvasOffset = $('#mainCanvas').offset();
-    let line = {};
-    line.start = parseInt($("#" + fieldType + "LineStart").val());
-    line.end = parseInt($("#" + fieldType + "LineEnd").val());
+    let line = this.model.createLine(
+        parseInt($("#" + fieldType + "LineStart").val()),
+        parseInt($("#" + fieldType + "LineEnd").val()),
+        $("#" + fieldType + "LineWeightPerMeter").val());
     // The two points need to be integers
     if (isNaN(line.start) || isNaN(line.end)) {
       return null;
@@ -234,6 +247,21 @@ class Controller {
       return null;
     }
     return line;
+  }
+  
+  getWeightFromMeasureFields() {
+    let weight = {};
+    weight.line = parseInt($("#measureWeightLine").val());
+    weight.weightPerMeter = parseFloat($("#measureWeightPerMeter").val());
+    if (isNaN(weight.line)) {
+      // not having a line ID is fine if user determines
+      // line by clicking.
+      weight.line = null;
+    }
+    if (isNaN(weight.weightPerMeter)) {
+      return null;
+    }
+    return weight;
   }
   
   removeSelected() {
@@ -304,6 +332,17 @@ class Controller {
         return;
       }
       this.model.addLine(startEnd);
+    } else if (this.mode == "weight") {
+      let weight = this.getWeightFromMeasureFields();
+      if (!weight || !weight.line) {
+        return;
+      }
+      let line = this.model.lines[weight.line];
+      if (!line) {
+        // Line needs to be valid
+        return;
+      }
+      line.weightPerMeter = weight.weightPerMeter;
     }
     this.onModelChange(true);
     // Prepare input field for next element

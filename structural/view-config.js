@@ -1,12 +1,12 @@
 class ViewConfig {
-  constructor(width, height, startX, startY, scale, pixelScale, displayIds) {
+  constructor(width, height, startX, startY, scale, pixelScale, displayDetails) {
     this.width = width;
     this.height = height;
     this.startX = startX;
     this.startY = startY;
     this.scale = scale;
     this.pixelScale = pixelScale;
-    this.displayIds = displayIds;
+    this.displayDetails = displayDetails;
   }
   
   setDisplaySize(width, height) {
@@ -20,12 +20,12 @@ class ViewConfig {
     this.scale = scale;
   }
   
-  setDisplayIds(displayIds) {
-    this.displayIds = displayIds;
+  setDisplayDetails(displayDetails) {
+    this.displayDetails = displayDetails;
   }
   
-  toggleDisplayIds() {
-    this.displayIds = !this.displayIds;
+  toggleDisplayDetails() {
+    this.displayDetails = !this.displayDetails;
   }
   
   zoom(amount, mousePos) {
@@ -46,22 +46,21 @@ class ViewConfig {
     context.clearRect(area.x, area.y, area.width, area.height);
   }
   
-  drawDot(context, pos, id, supportType, color) {
-    this.drawDotViewCoord(context, this.modelCoordToView(pos), id, supportType, color);
+  drawDot(context, pos, label, supportType, color) {
+    this.drawDotViewCoord(context, this.modelCoordToView(pos), label, supportType, color);
   }
   
-  drawDotViewCoord(context, pos, id, supportType, color) {
+  drawDotViewCoord(context, pos, label, supportType, color) {
     let radius = this.pixelScale * 2;
     context.beginPath();
     context.arc(pos.x, pos.y, radius, 0, 2 * Math.PI, false);
     context.fillStyle = color == null ? 'black' : color;
     context.fill();
     
-    let pointText = "p" + id;
-    let textMeasurements = context.measureText(pointText);
-    if (this.displayIds && !!id) {
+    let textMeasurements = context.measureText(label);
+    if (this.displayDetails && !!label) {
       context.font = (this.pixelScale * 10) + 'pt sans serif';
-      context.fillText(pointText, pos.x + radius, pos.y);
+      context.fillText(label, pos.x + radius, pos.y);
     }
     if (!!supportType) {
       context.beginPath();
@@ -77,13 +76,13 @@ class ViewConfig {
     return {x: pos.x - radius * 12, y: pos.y - radius * 12, width: radius * 24 + textMeasurements.width, height: radius * 24};
   }
   
-  drawLineModelCoord(context, p1, p2, id, color) {
+  drawLineModelCoord(context, p1, p2, label, color) {
     let p1View = this.modelCoordToView(p1);
     let p2View = this.modelCoordToView(p2);
-    return this.drawLineViewCoord(context, p1View.x, p1View.y, p2View.x, p2View.y, id, color);
+    return this.drawLineViewCoord(context, p1View.x, p1View.y, p2View.x, p2View.y, label, color);
   }
   
-  drawLineViewCoord(context, x1, y1, x2, y2, id, color) {
+  drawLineViewCoord(context, x1, y1, x2, y2, label, color) {
     context.fillStyle = color;
     context.strokeStyle = color;
 
@@ -92,11 +91,10 @@ class ViewConfig {
     context.lineTo(x2, y2);
     context.stroke();
     
-    let lineText = "l" + id;
-    let textMeasurements = context.measureText(lineText);
-    if (this.displayIds && !!id) {
+    let textMeasurements = context.measureText(label);
+    if (this.displayDetails && !!label) {
       context.font = (this.pixelScale * 10) + 'pt sans serif';
-      context.fillText("l" + id, (x1 + x2) / 2, (y1 + y2) / 2);
+      context.fillText(label, (x1 + x2) / 2, (y1 + y2) / 2);
     }
 
     // Compute dirty area

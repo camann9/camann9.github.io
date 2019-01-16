@@ -51,13 +51,14 @@ class View {
   
   drawModel(canvasContext) {
     Object.values(this.model.points).forEach((p) => {
-      this.viewConfig.drawDot(canvasContext, p, p.id, p.support, "black");
+      this.viewConfig.drawDot(canvasContext, p, this.model.pointLabel(p), p.support, "black");
     });
     Object.values(this.model.lines).forEach((l) => {
       let p1 = this.model.points[l.start];
       let p2 = this.model.points[l.end];
       if (!!p1 && !!p2) {
-        this.viewConfig.drawLineModelCoord(canvasContext, p1, p2, l.id, "black");
+        this.viewConfig.drawLineModelCoord(
+            canvasContext, p1, p2, this.model.lineLabel(l), "black");
       }
     });
   }
@@ -92,6 +93,7 @@ class View {
     } else if (name == "line") {
       $("#propLineStart").val(data.start);
       $("#propLineEnd").val(data.end);
+      $("#propLineWeightPerMeter").val(data.weightPerMeter);
     }
     this.selectFirstPropertyField();
   }
@@ -104,7 +106,7 @@ class View {
   }
   
   onModeChange(mode) {
-    let modeMap = {line: "#lineFields", point: "#pointFields", null: "#mousePosFields"};
+    let modeMap = {line: "#lineFields", point: "#pointFields", weight: "#weightFields", null: "#mousePosFields"};
     let id = modeMap[mode];
     $("#measureInputFieldsContainer").children().addClass("hidden");
     $(id).removeClass("hidden");

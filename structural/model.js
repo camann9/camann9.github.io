@@ -32,7 +32,7 @@ class Model {
     if (parsed.viewConfig) {
       let v = parsed.viewConfig;
       this.viewConfig.setStartAndScale(v.startX, v.startY, v.scale);
-      this.viewConfig.setDisplayIds(v.displayIds);
+      this.viewConfig.setDisplayDetails(v.displayDetails);
     }
   }
   
@@ -59,8 +59,17 @@ class Model {
     linesToDelete.forEach((id) => {delete this.lines[id]});
   }
   
+  pointLabel(p) {
+    return "p" + p.id;
+  }
+  
   removeLine(id) {
     delete this.lines[id];
+  }
+  
+  createLine(start, end, weightPerMeter) {
+    let adjustedWeight = weightPerMeter ? parseFloat(weightPerMeter) : 0;
+    return {start: start, end: end, weightPerMeter: adjustedWeight};
   }
   
   addLine(startEnd) {
@@ -72,10 +81,13 @@ class Model {
 
   setLine(id, line) {
     let lineWithId = Object.assign({}, line);
-    line.id = id;
+    lineWithId.id = id;
     this.lines[id] = lineWithId;
   }
   
+  lineLabel(line) {
+    return "l" + line.id + " (" + line.weightPerMeter.toFixed(2) + ")";
+  }
   
   findClosestPoint(pos, maxDist) {
     return this.findClosest(pos, maxDist, this.points, this.getDist.bind(this));
@@ -148,7 +160,7 @@ class Model {
         startX: this.viewConfig.startX,
         startY: this.viewConfig.startY,
         scale: this.viewConfig.scale,
-        displayIds: this.viewConfig.displayIds
+        displayDetails: this.viewConfig.displayDetails
     };
     return JSON.stringify(output);
   }

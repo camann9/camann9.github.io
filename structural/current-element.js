@@ -52,7 +52,8 @@ class CurrentElement {
       let point = this.model.points[this.selection.id];
       // Draw new point and store location
       let pointViewCoord = this.viewConfig.modelCoordToView(point);
-      this.area = this.viewConfig.drawDotViewCoord(canvasContext, pointViewCoord, point.id, point.support, "red");
+      this.area = this.viewConfig.drawDotViewCoord(
+          canvasContext, pointViewCoord, this.model.pointLabel(point), point.support, "red");
     } else if (this.selection.type == "line") {
       let l = this.model.lines[this.selection.id];
       let p1 = this.model.points[l.start];
@@ -61,7 +62,8 @@ class CurrentElement {
         return;
       }
       // Draw new point and store location
-      this.area = this.viewConfig.drawLineModelCoord(canvasContext, p1, p2, l.id, "red");
+      this.area = this.viewConfig.drawLineModelCoord(
+          canvasContext, p1, p2, this.model.lineLabel(l), "red");
     }
   }
   
